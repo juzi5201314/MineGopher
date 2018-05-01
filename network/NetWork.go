@@ -14,10 +14,17 @@ func NewNetWork(server *minegopher.Server) *NetWork {
 
 type NetWork struct {
 	packets []protocol.DataPacket
+	interfaces []RaknetInterface
 	upload float64
 	download float64
 	name string
 	server *minegopher.Server
+}
+
+func (network *NetWork) registerInterface(i RaknetInterface) {
+	network.interfaces = append(network.interfaces, i)
+	i.SetNetWork(network)
+	i.SetName(network.name)
 }
 
 func (network *NetWork) addStatistics(upload float64, download float64) {
