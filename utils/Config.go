@@ -5,7 +5,6 @@ import (
 	"gopkg.in/yaml.v2"
 	"encoding/json"
 	"encoding/xml"
-	"github.com/kataras/iris/core/errors"
 	"reflect"
 )
 
