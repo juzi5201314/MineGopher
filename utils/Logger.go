@@ -2,6 +2,7 @@ package utils
 
 import (
 	"fmt"
+"log"
 	"os"
 	"strings"
 )
@@ -43,7 +44,7 @@ func (logger *Logger) process() {
 func (logger *Logger) write() {
 	d := ColorString(<- logger.messageQueue)
 	logger.file.WriteString(d.StripAll() + "\n")
-	fmt.Println(d.ToANSI() + AnsiReset)
+	log.Println(d.ToANSI() + AnsiReset)
 }
 
 func (logger *Logger) Close() {

@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"encoding/xml"
 	"reflect"
+"errors"
 )
 
 const (
@@ -72,7 +73,7 @@ func (config *Config) IsNew() bool {
 
 func (config *Config) Marshal(data interface{}) []byte {
 	var d []byte
-	var err error
+var err error
 	switch config.ctype {
 	case YMAL:
 		d, err = yaml.Marshal(data)
@@ -81,11 +82,11 @@ func (config *Config) Marshal(data interface{}) []byte {
 	case XML:
 		d, err = xml.Marshal(data)
 	default:
-		err = errors.New("Marshal file: " + config.file.Name() + " fail.")
+		err = errors.New("Type not found")
 	}
-	if err != nil {
-		panic(err)
-	}
+if err != nil {
+GetLogger().Error("Marshal file: " + config.file.Name() + " fail. message: " + err.Error())
+}
 	return d
 }
 
