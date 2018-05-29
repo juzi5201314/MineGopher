@@ -1,37 +1,37 @@
 package utils
 
 import (
-	"os"
-	"gopkg.in/yaml.v2"
 	"encoding/json"
 	"encoding/xml"
+	"errors"
+	"gopkg.in/yaml.v2"
+	"os"
 	"reflect"
-"errors"
 )
 
 const (
 	YMAL = 0
 	JSON = 1
-	XML = 2
+	XML  = 2
 )
 
 func NewConfig(filename string, ctype int, data map[string]interface{}) *Config {
-	config := &Config{filepath:filename, ctype:ctype, data:data}
+	config := &Config{filepath: filename, ctype: ctype, data: data}
 	config.load()
 	return config
 }
 
 type Config struct {
 	filepath string
-	ctype int
-	data map[string]interface{}
-	file *os.File
-	isnew bool
+	ctype    int
+	data     map[string]interface{}
+	file     *os.File
+	isnew    bool
 }
 
 func (config *Config) load() {
 	_, err := os.Stat(config.filepath)
-	file, ferr := os.OpenFile(config.filepath, os.O_APPEND | os.O_CREATE | os.O_WRONLY, 0700)
+	file, ferr := os.OpenFile(config.filepath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0700)
 	if ferr != nil {
 		panic(ferr)
 	}
@@ -42,7 +42,7 @@ func (config *Config) load() {
 		file.WriteString(string(bd))
 		file.Sync()
 		file.Close()
-	}else if err == nil{
+	} else if err == nil {
 		buffer := make([]byte, 102400)
 		file.Read(buffer)
 		config.Unmarshal(buffer, config.data)
@@ -52,7 +52,7 @@ func (config *Config) load() {
 func (config *Config) Get(key string, _default interface{}) interface{} {
 	if v, exist := config.data[key]; exist && reflect.TypeOf(v) == reflect.TypeOf(_default) {
 		return v
-	}else {
+	} else {
 		return _default
 	}
 }
@@ -73,7 +73,7 @@ func (config *Config) IsNew() bool {
 
 func (config *Config) Marshal(data interface{}) []byte {
 	var d []byte
-var err error
+	var err error
 	switch config.ctype {
 	case YMAL:
 		d, err = yaml.Marshal(data)
@@ -84,9 +84,9 @@ var err error
 	default:
 		err = errors.New("Type not found")
 	}
-if err != nil {
-GetLogger().Error("Marshal file: " + config.file.Name() + " fail. message: " + err.Error())
-}
+	if err != nil {
+		GetLogger().Error("Marshal file: " + config.file.Name() + " fail. message: " + err.Error())
+	}
 	return d
 }
 

@@ -2,7 +2,7 @@ package utils
 
 import (
 	"fmt"
-"log"
+	"log"
 	"os"
 	"strings"
 )
@@ -21,8 +21,8 @@ const (
 
 type Logger struct {
 	messageQueue chan string
-	file *os.File
-	closed bool
+	file         *os.File
+	closed       bool
 }
 
 var logger *Logger = &Logger{}
@@ -42,7 +42,7 @@ func (logger *Logger) process() {
 }
 
 func (logger *Logger) write() {
-	d := ColorString(<- logger.messageQueue)
+	d := ColorString(<-logger.messageQueue)
 	logger.file.WriteString(d.StripAll() + "\n")
 	log.Println(d.ToANSI() + AnsiReset)
 }

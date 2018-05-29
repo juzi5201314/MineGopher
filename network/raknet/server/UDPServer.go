@@ -6,16 +6,23 @@ import (
 
 func NewUDPServer(ip string, port int) *UDPServer {
 	server := new(UDPServer)
-	conn, err := net.ListenUDP("udp", &net.UDPAddr{IP: net.ParseIP(ip), Port: port})
-	server.conn = conn
-	if err != nil {
-		panic(err)
-	}
+	server.ip = ip
+	server.port = port
 	return server
 }
 
 type UDPServer struct {
+	ip string
+	port int
 	conn *net.UDPConn
+}
+
+func (server *UDPServer) Start() {
+	conn, err := net.ListenUDP("udp", &net.UDPAddr{IP: net.ParseIP(server.ip), Port: server.port})
+	server.conn = conn
+	if err != nil {
+		panic(err)
+	}
 }
 
 func (server *UDPServer) close() {

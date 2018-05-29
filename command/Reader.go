@@ -1,8 +1,8 @@
 package command
 
 import (
-	"io"
 	"bufio"
+	"io"
 	"strings"
 
 	"github.com/juzi5201314/minegopher"

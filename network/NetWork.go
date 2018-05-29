@@ -1,22 +1,22 @@
 package network
 
 import (
+	"github.com/juzi5201314/MineGopher/api"
 	"github.com/juzi5201314/MineGopher/network/protocol"
-"github.com/juzi5201314/MineGopher/api"
 )
 
 func New(s api.Server) *NetWork {
 	network := new(NetWork)
-network.packets = map[byte]protocol.DataPacket{}
+	network.packets = map[byte]protocol.DataPacket{}
 	network.registerPackets()
 	return network
 }
 
 type NetWork struct {
-	packets map[byte]protocol.DataPacket
-	upload float64
+	packets  map[byte]protocol.DataPacket
+	upload   float64
 	download float64
-	name string
+	name     string
 }
 
 func (network *NetWork) GetUpload() float64 {
@@ -45,8 +45,8 @@ func (network *NetWork) SetName(name string) {
 
 func (network *NetWork) GetPacket(id byte) *protocol.DataPacket {
 	if packet, has := network.packets[id]; has {
-return packet.New()
-}
+		return packet.New()
+	}
 	return nil
 }
 
