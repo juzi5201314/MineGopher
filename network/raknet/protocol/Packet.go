@@ -70,7 +70,7 @@ func (packet *Packet) GetAddress() (string, uint16, byte) {
 	return addr, port, ipv
 }
 
-func (packet *Packet) PutAddress(add string, port uint16, ipv byte) {
+func (packet *Packet) PutAddress(addr string, port uint16, ipv byte) {
 	packet.PutByte(ipv)
 	switch ipv {
 	case 4:

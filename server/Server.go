@@ -2,9 +2,9 @@ package server
 
 import (
 	"github.com/juzi5201314/MineGopher/network"
+	raknet "github.com/juzi5201314/MineGopher/network/raknet/server"
 	"github.com/juzi5201314/MineGopher/utils"
 	"os"
-	raknet "github.com/juzi5201314/MineGopher/network/raknet/server"
 )
 
 const (
@@ -26,7 +26,7 @@ type Server struct {
 	network           *network.NetWork
 	ip                string
 	port              int
-	raknetServer *raknet.RaknetServer
+	raknetServer      *raknet.RaknetServer
 }
 
 func New(serverPath string, config *utils.Config, logger *utils.Logger) *Server {

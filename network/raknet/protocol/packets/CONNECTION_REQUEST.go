@@ -1,19 +1,24 @@
 package packets
 
+import (
+	"github.com/juzi5201314/MineGopher/network/raknet/protocol"
+)
+
 type ConnectionRequest struct {
-	*Packet
+	*protocol.Packet
 	ClientId uint64
 	PingSendTime uint64
 	Security byte
 }
 
 func NewConnectionRequest() *ConnectionRequest {
-	return &ConnectionRequest{NewPacket(CONNECTED_REQUEST), 0, 0, 0}
+	return &ConnectionRequest{protocol.NewPacket(CONNECTION_REQUEST), 0, 0, 0}
 }
 
 func (request *ConnectionRequest) Encode() {
 	request.EncodeId()
-	request.PutUnsignedLong(request.ClientId)	request.PutUnsignedLong(request.PingSendTime)
+	request.PutUnsignedLong(request.ClientId)
+	request.PutUnsignedLong(request.PingSendTime)
 }
 
 func (request *ConnectionRequest) Decode() {

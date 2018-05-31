@@ -1,4 +1,4 @@
-package protocol
+package packets
 
 const (
 	FLAG_DATAGRAM_ACK  = 0xc0
@@ -14,6 +14,6 @@ const (
 	OPEN_CONNECTION_REPLY_2   = 0x08
 	CONNECTION_REQUEST        = 0x09
 	CONNECTION_ACCEPT         = 0x10
- INCOMING_CONNECTION   = 0x13
+	INCOMING_CONNECTION       = 0x13
 	DISCONNECT_NOTIFICATION   = 0x15
 )

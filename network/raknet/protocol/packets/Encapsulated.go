@@ -1,6 +1,7 @@
 package packets
 
 import (
+	"github.com/juzi5201314/MineGopher/network/raknet/protocol"
 	"errors"
 )
 
@@ -18,7 +19,7 @@ const (
 )
 
 type EncapsulatedPacket struct {
-	*Packet
+	*protocol.Packet
 	Reliability  byte
 	HasSplit     bool
 	Length       uint
@@ -31,7 +32,7 @@ type EncapsulatedPacket struct {
 }
 
 func NewEncapsulatedPacket() *EncapsulatedPacket {
-	var packet = EncapsulatedPacket{NewPacket(0), 0, false, 0, 0, 0, 0, 0, 0, 0}
+	var packet = EncapsulatedPacket{protocol.NewPacket(0), 0, false, 0, 0, 0, 0, 0, 0, 0}
 	return &packet
 }
 

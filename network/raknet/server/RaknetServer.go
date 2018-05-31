@@ -2,6 +2,7 @@ package server
 
 import (
 	"fmt"
+	"github.com/juzi5201314/MineGopher/network/raknet/protocol"
 	"github.com/juzi5201314/MineGopher/network/raknet/protocol/packets"
 	"net"
 	"sync"
@@ -107,29 +108,29 @@ func (server *RaknetServer) processPacket() {
 	}
 	buffer = buffer[:n]
 	pid := buffer[0]
-	var packet pk.DataPacket
+	var packet protocol.DataPacket
 
 	if server.sessions.Exists(addr) {
 		switch {
-		case pid&protocol.BITFLAG_ACK != 0:
+		case pid&packets.BITFLAG_ACK != 0:
 			packet = packets.NewACK()
 			break
-		case pid&protocol.BITFLAG_NAK != 0:
+		case pid&packets.BITFLAG_NAK != 0:
 			packet = packets.NewNACK()
 			break
-		case pid&BITFLAG_VALID != 0:
+		case pid&packets.BITFLAG_VALID != 0:
 			packet = packets.NewDatagram()
 			break
 		}
 	} else {
 		switch pid {
-		case protocol.UNCONNECTED_PING:
+		case packets.UNCONNECTED_PING:
 			packet = packets.NewUnconnectedPing()
 			break
-		case packets.OPENCONNECTIONREQUEST_1:
+		case packets.OPEN_CONNECTION_REQUEST_1:
 			packet = packets.NewOpenConnectionRequest1()
 			break
-		case packets.OPENCONNECTIONREQUEST_2:
+		case packets.OPEN_CONNECTION_REQUEST_2:
 			packet = packets.NewOpenConnectionRequest2()
 			break
 		}
@@ -159,6 +160,7 @@ func (sessions Sessions) Exists(addr *net.UDPAddr) bool {
 	return exists
 }
 
-func (sessions Sessions) GetSession(addr *net.UDPAddr) *Session {
-	return sessions[fmt.Sprint(addr)]
+func (sessions Sessions) GetSession(addr *net.UDPAddr) (*Session, bool) {
+	session, exists := sessions[fmt.Sprint(addr)]
+	return session, exists
 }

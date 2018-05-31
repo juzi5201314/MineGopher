@@ -1,21 +1,23 @@
 package packets
 
 import (
-"github.com/juzi5201314/MineGopher/utils"
+	"github.com/juzi5201314/MineGopher/network/raknet/protocol"
+	"github.com/juzi5201314/MineGopher/utils"
+	"sort"
 )
 
 type AcknowledgementPacket struct {
-*Packet
-packets []uint32
+	*protocol.Packet
+	packets []uint32
 }
 
 func (packet *AcknowledgementPacket) Encode() {
 	packet.EncodeId()
 
 	sort.Slice(packet.packets, func(i, j int) bool {
-		return packet.packets[i] < packet.lackets[j]
+		return packet.packets[i] < packet.packets[j]
 	})
-packetCount := len(packet.packets)
+	packetCount := len(packet.packets)
 
 	if packetCount == 0 {
 		packet.PutShort(0)
@@ -29,7 +31,7 @@ packetCount := len(packet.packets)
 	firstPacket := packet.packets[0]
 	lastPacket := packet.packets[0]
 
-	intervalCount int16 := 1
+	intervalCount := int16(1)
 
 	for pointer < packetCount {
 		currentPacket := packet.packets[pointer]
@@ -92,5 +94,3 @@ func (packet *AcknowledgementPacket) Decode() {
 		}
 	}
 }
-
-

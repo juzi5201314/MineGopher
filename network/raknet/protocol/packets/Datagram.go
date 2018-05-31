@@ -1,4 +1,8 @@
-package protocol
+package packets
+
+import (
+	"github.com/juzi5201314/MineGopher/network/raknet/protocol"
+)
 
 const (
 	BITFLAG_VALID = 0x80
@@ -11,7 +15,7 @@ const (
 )
 
 type Datagram struct {
-	*Packet
+	*protocol.Packet
 	PacketPair     bool
 	ContinuousSend bool
 	NeedsBAndAs    bool
@@ -20,7 +24,7 @@ type Datagram struct {
 }
 
 func NewDatagram() *Datagram {
-	datagram := &Datagram{NewPacket(0), false, false, false, 0, &[]*EncapsulatedPacket{}}
+	datagram := &Datagram{protocol.NewPacket(0), false, false, false, 0, &[]*EncapsulatedPacket{}}
 	datagram.ResetStream()
 	return datagram
 }
@@ -52,9 +56,9 @@ func (datagram *Datagram) Encode() {
 func (datagram *Datagram) Decode() {
 	flags := datagram.GetByte()
 
-	datagram.PacketPair = (flags & BitFlagPacketPair) != 0
-	datagram.ContinuousSend = (flags & BitFlagContinuousSend) != 0
-	datagram.NeedsBAndAs = (flags & BitFlagNeedsBAndAs) != 0
+	datagram.PacketPair = (flags & BITFLAG_PACKET_PAIR) != 0
+	datagram.ContinuousSend = (flags & BITFLAG_CONTINUOUS_SEND) != 0
+	datagram.NeedsBAndAs = (flags & BITFLAG_NEEDS_B_AND_AS) != 0
 
 	datagram.SequenceNumber = datagram.GetLittleTriad()
 
@@ -64,7 +68,7 @@ func (datagram *Datagram) Decode() {
 		if err != nil {
 			return
 		}
-		datagram.packets = &(append(*datagram.packets, packet))
+		datagram.AddPacket(packet)
 	}
 
 }
@@ -78,6 +82,6 @@ func (datagram *Datagram) GetLength() int {
 }
 
 func (datagram *Datagram) AddPacket(packet *EncapsulatedPacket) {
-	var packets = append(*datagram.packets, packet)
+	packets := append(*datagram.packets, packet)
 	datagram.packets = &packets
 }

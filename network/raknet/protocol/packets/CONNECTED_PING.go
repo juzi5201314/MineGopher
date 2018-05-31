@@ -1,13 +1,16 @@
 package packets
 
+import (
+	"github.com/juzi5201314/MineGopher/network/raknet/protocol"
+)
+
 type ConnectedPing struct {
-	*Packet
+	*protocol.Packet
 	PingSendTime int64
 }
 
-
 func NewConnectedPing() *ConnectedPing {
-	return &ConnectedPing{NewPacket(CONNECTED_PING), 0}
+	return &ConnectedPing{protocol.NewPacket(CONNECTED_PING), 0}
 }
 
 func (ping *ConnectedPing) Encode() {
@@ -17,7 +20,6 @@ func (ping *ConnectedPing) Encode() {
 	ping.PutLong(ping.PingSendTime)
 
 }
-
 
 func (ping *ConnectedPing) Decode() {
 
