@@ -12,7 +12,7 @@ func NewUDPServer(ip string, port int) *UDPServer {
 }
 
 type UDPServer struct {
-	ip string
+	ip   string
 	port int
 	conn *net.UDPConn
 }
