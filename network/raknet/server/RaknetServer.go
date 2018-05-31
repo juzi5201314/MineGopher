@@ -2,7 +2,6 @@ package server
 
 import (
 	"fmt"
-	"github.com/juzi5201314/MineGopher/network/raknet/protocol"
 	"github.com/juzi5201314/MineGopher/network/raknet/protocol/packets"
 	"net"
 	"sync"
@@ -108,7 +107,7 @@ func (server *RaknetServer) processPacket() {
 	}
 	buffer = buffer[:n]
 	pid := buffer[0]
-	var packet packets.DataPacket
+	var packet pk.DataPacket
 
 	if server.sessions.Exists(addr) {
 		switch {
