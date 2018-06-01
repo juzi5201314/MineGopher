@@ -8,16 +8,16 @@ import (
 
 type AcknowledgementPacket struct {
 	*protocol.Packet
-	packets []uint32
+Packets []uint32
 }
 
 func (packet *AcknowledgementPacket) Encode() {
 	packet.EncodeId()
 
-	sort.Slice(packet.packets, func(i, j int) bool {
-		return packet.packets[i] < packet.packets[j]
+	sort.Slice(packet.Packets, func(i, j int) bool {
+		return packet.Packets[i] < packet.Packets[j]
 	})
-	packetCount := len(packet.packets)
+	packetCount := len(packet.Packets)
 
 	if packetCount == 0 {
 		packet.PutShort(0)
@@ -28,13 +28,13 @@ func (packet *AcknowledgementPacket) Encode() {
 	stream.ResetStream()
 
 	pointer := 1
-	firstPacket := packet.packets[0]
-	lastPacket := packet.packets[0]
+	firstPacket := packet.Packets[0]
+	lastPacket := packet.Packets[0]
 
 	intervalCount := int16(1)
 
 	for pointer < packetCount {
-		currentPacket := packet.packets[pointer]
+		currentPacket := packet.Packets[pointer]
 		difference := currentPacket - lastPacket
 
 		if difference == 1 {
@@ -72,7 +72,7 @@ func (packet *AcknowledgementPacket) Encode() {
 
 func (packet *AcknowledgementPacket) Decode() {
 	packet.DecodeStep()
-	packet.packets = []uint32{}
+	packet.Packets = []uint32{}
 	packetCount := packet.GetShort()
 	count := 0
 	for i := int16(0); i < packetCount && !packet.Feof() && count < 4096; i++ {
@@ -84,12 +84,12 @@ func (packet *AcknowledgementPacket) Decode() {
 			}
 
 			for pack := start; pack < end; pack++ {
-				packet.packets = append(packet.packets, pack)
+				packet.Packets = append(packet.Packets, pack)
 				count++
 			}
 
 		} else {
-			packet.packets = append(packet.packets, packet.GetLittleTriad())
+			packet.Packets = append(packet.Packets, packet.GetLittleTriad())
 			count++
 		}
 	}

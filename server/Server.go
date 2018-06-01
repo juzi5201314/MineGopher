@@ -5,6 +5,7 @@ import (
 	raknet "github.com/juzi5201314/MineGopher/network/raknet/server"
 	"github.com/juzi5201314/MineGopher/utils"
 	"os"
+	"github.com/juzi5201314/MineGopher/api"
 )
 
 const (
@@ -31,6 +32,8 @@ type Server struct {
 
 func New(serverPath string, config *utils.Config, logger *utils.Logger) *Server {
 	server := new(Server)
+	api.SetServer(server)
+
 	server.serverPath = serverPath
 	server.config = config
 	server.logger = logger
@@ -111,6 +114,23 @@ func (server *Server) Shutdown() {
 	server.logger.Info("Server stopped.")
 	server.isRunning = false
 	server.logger.Close()
+}
+
+func (server *Server) GetConfig() *utils.Config {
+	return server.config
+}
+
+
+func (server *Server) GetNetWork() api.NetWork {
+	return server.network
+}
+
+func (server *Server) GetRaknetServer() api.RaknetServer {
+	return server.raknetServer
+}
+
+func (server *Server) GetName() string {
+	return ServerName
 }
 
 /*
@@ -324,8 +344,4 @@ func (server *Server) GetIp() string {
 
 func (server *Server) GetPort() int {
 	return server.port
-}
-
-func (server *Server) GetNetWork() *network.NetWork {
-	return server.network
 }

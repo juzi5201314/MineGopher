@@ -2,7 +2,6 @@ package packets
 
 import (
 	"github.com/juzi5201314/MineGopher/network/raknet/protocol"
-	"fmt"
 )
 
 type UnconnectedPong struct {
@@ -34,5 +33,4 @@ func (pong *UnconnectedPong) Decode() {
 	pong.ReadMagic()
 	l := pong.GetShort()
 	pong.PongData = string(pong.Get(int(l)))
-	fmt.Println(pong.PongData)
 }

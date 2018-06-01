@@ -3,6 +3,7 @@ package network
 import (
 	"github.com/juzi5201314/MineGopher/api"
 	"github.com/juzi5201314/MineGopher/network/protocol"
+	"fmt"
 )
 
 func New(s api.Server) *NetWork {
@@ -36,7 +37,8 @@ func (network *NetWork) AddDownload(b float64) {
 }
 
 func (network *NetWork) GetName() string {
-	return network.name
+	return fmt.Sprint("MCPE;", network.name, ";", "201", ";","1.2.10", ";", "2", ";", api.GetServer().GetConfig().Get("max-player", 20), ";", api.GetServer().GetRaknetServer().GetId(), ";", api.GetServer().GetName(), ";Creative;")
+
 }
 
 func (network *NetWork) SetName(name string) {

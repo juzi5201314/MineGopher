@@ -8,13 +8,17 @@ import (
 )
 
 type DataPacket interface {
-	New() *DataPacket
 	SetBuffer([]byte)
 	GetBuffer() []byte
 	GetId() int
 	HasMagic() bool
 	Encode()
 	Decode()
+}
+
+type ConnectedPacket interface {
+	Encode()
+	GetBuffer() []byte
 }
 
 type Packet struct {

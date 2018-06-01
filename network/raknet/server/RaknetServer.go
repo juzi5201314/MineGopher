@@ -7,6 +7,10 @@ import (
 	"net"
 	"sync"
 	"time"
+	"math/rand"
+	"bytes"
+	"github.com/juzi5201314/MineGopher/network/query"
+	"github.com/juzi5201314/MineGopher/api"
 )
 
 const (
@@ -21,6 +25,7 @@ type RaknetServer struct {
 	ipBlockList map[string]*net.UDPAddr
 	running     bool
 	CurrentTick int64
+	id int64
 	*sync.RWMutex
 }
 
@@ -32,6 +37,7 @@ func New(ip string, port int) *RaknetServer {
 		sessions:    Sessions{},
 		Timeout:     time.Second * TIMEOUT,
 		ipBlockList: map[string]*net.UDPAddr{},
+		id: rand.NewSource(time.Now().Unix()).Int63(),
 		RWMutex:     &sync.RWMutex{},
 	}
 }
@@ -108,7 +114,7 @@ func (server *RaknetServer) processPacket() {
 	}
 	buffer = buffer[:n]
 	pid := buffer[0]
-	var packet protocol.DataPacket
+	var packet protocol.DataPacket = nil
 
 	if server.sessions.Exists(addr) {
 		switch {
@@ -126,33 +132,41 @@ func (server *RaknetServer) processPacket() {
 		switch pid {
 		case packets.UNCONNECTED_PING:
 			packet = packets.NewUnconnectedPing()
-			break
+			println(pid)
 		case packets.OPEN_CONNECTION_REQUEST_1:
 			packet = packets.NewOpenConnectionRequest1()
-			break
 		case packets.OPEN_CONNECTION_REQUEST_2:
 			packet = packets.NewOpenConnectionRequest2()
-			break
 		}
 	}
 	if packet == nil {
+		println(buffer[0])
+		if bytes.Equal(buffer[0:2], query.Header) {
+			if !api.GetServer().GetConfig().Get("enable-query", true).(bool) {
+				return
+			}
+			println("query")
+		}
 		return
 	}
 	packet.SetBuffer(buffer)
 	packet.Decode()
 	if packet.HasMagic() {
-
+		HandleUnconnectedMessage(packet, addr, server)
 	} else if session, exists := server.sessions.GetSession(addr); exists {
 
-		if datagram, ok := packet.(*protocol.Datagram); ok {
+		if datagram, ok := packet.(*packets.Datagram); ok {
 			session.ReceiveWindow.AddDatagram(datagram)
-		} else if ack, ok := packet.(*protocol.ACK); ok {
+		} else if ack, ok := packet.(*packets.ACK); ok {
 			session.HandleACK(ack)
-		} else if nack, ok := packet.(*protocol.NAK); ok {
+		} else if nack, ok := packet.(*packets.NACK); ok {
 			session.HandleNACK(nack)
 		}
 	}
-	fmt.Printf("0x%x\n", pid)
+}
+
+func (server *RaknetServer) GetId() int64 {
+	return server.id
 }
 
 func (sessions Sessions) Exists(addr *net.UDPAddr) bool {
