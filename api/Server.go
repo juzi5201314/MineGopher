@@ -23,4 +23,5 @@ type Server interface {
 	GetConfig() *utils.Config
 	GetNetWork() NetWork
 	GetRaknetServer() RaknetServer
+	GetLogger() *utils.Logger
 }

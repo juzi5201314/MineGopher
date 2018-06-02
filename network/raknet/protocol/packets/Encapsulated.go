@@ -1,8 +1,8 @@
 package packets
 
 import (
-	"github.com/juzi5201314/MineGopher/network/raknet/protocol"
 	"errors"
+	"github.com/juzi5201314/MineGopher/network/raknet/protocol"
 )
 
 const (

@@ -1,27 +1,30 @@
 package server
 
 import (
-	"net"
 	"fmt"
+	"github.com/juzi5201314/MineGopher/network/raknet/protocol"
+	"github.com/juzi5201314/MineGopher/network/raknet/protocol/packets"
+	"github.com/juzi5201314/MineGopher/player"
+	"net"
 	"sync"
 	"time"
-	"github.com/juzi5201314/MineGopher/network/raknet/protocol/packets"
-	"github.com/juzi5201314/MineGopher/network/raknet/protocol"
+	"github.com/juzi5201314/MineGopher/api"
 )
 
 type Session struct {
 	*net.UDPAddr
-	Server       *RaknetServer
+	Server        *RaknetServer
 	ReceiveWindow *ReceiveWindow
 	RecoveryQueue *RecoveryQueue
 
-	MTUSize int16
-	Indexes Indexes
-	Queues Queues
-	ClientId uint64
+	MTUSize     int16
+	Indexes     Indexes
+	Queues      Queues
+	ClientId    uint64
 	CurrentPing int64
-	LastUpdate time.Time
-	FlaggedForClose bool
+	LastUpdate  time.Time
+	closed      bool
+	player      *player.Player
 }
 
 type Queues struct {
@@ -72,16 +75,20 @@ func NewSession(addr *net.UDPAddr, mtuSize int16, server *RaknetServer) *Session
 		0,
 		time.Now(),
 		false,
+		nil,
 	}
+	session.player = &player.Player{Session: session}
 	session.ReceiveWindow.DatagramHandleFunction = func(datagram TimestampedDatagram) {
 		session.LastUpdate = time.Now()
 		session.SendACK(datagram.SequenceNumber)
 		session.HandleDatagram(datagram)
 	}
+
 	return session
 }
 
 func (session *Session) Close() {
+	session.closed = true
 	session.UDPAddr = nil
 	session.Server = nil
 	session.ReceiveWindow = nil
@@ -90,12 +97,8 @@ func (session *Session) Close() {
 	session.Queues = Queues{}
 }
 
-func (session *Session) FlagForClose() {
-	session.FlaggedForClose = true
-}
-
 func (session *Session) IsClosed() bool {
-	return session.UDPAddr == nil
+	return session.closed
 }
 
 func (session *Session) Send(buffer []byte) (int, error) {
@@ -147,8 +150,9 @@ func (session *Session) HandleEncapsulated(packet *packets.EncapsulatedPacket, t
 	case packets.CONNECTED_PONG:
 		session.HandleConnectedPong(packet, timestamp)
 	case packets.DISCONNECT_NOTIFICATION:
-		session.FlagForClose()
+		session.Close()
 	default:
+		session.player.HandlePacket(api.GetServer().GetNetWork().RaknetPacketToMinecraftPaket(packet.Buffer))
 	}
 }
 
@@ -211,6 +215,9 @@ func (session *Session) HandleSplitEncapsulated(packet *packets.EncapsulatedPack
 }
 
 func (session *Session) Tick(currentTick int64) {
+	if session.closed {
+		return
+	}
 	session.Queues.High.Flush(session)
 	if currentTick%400 == 0 {
 		ping := packets.NewConnectedPing()
@@ -226,7 +233,7 @@ func (session *Session) Tick(currentTick int64) {
 	}
 }
 
-func (session *Session) SendPacket(packet protocol.ConnectedPacket, reliability byte, priority Priority) {
+func (session *Session) SendPacket(packet protocol.ConnectedPacket, reliability byte, priority byte) {
 	packet.Encode()
 	encapsulated := packets.NewEncapsulatedPacket()
 	encapsulated.Reliability = reliability
@@ -234,7 +241,7 @@ func (session *Session) SendPacket(packet protocol.ConnectedPacket, reliability 
 	session.Queues.AddEncapsulated(encapsulated, priority, session)
 }
 
-func (queues Queues) AddEncapsulated(packet *packets.EncapsulatedPacket, priority Priority, session *Session) {
+func (queues Queues) AddEncapsulated(packet *packets.EncapsulatedPacket, priority byte, session *Session) {
 	if session.IsClosed() {
 		return
 	}
@@ -256,7 +263,7 @@ func (queues Queues) AddEncapsulated(packet *packets.EncapsulatedPacket, priorit
 }
 
 func NewReceiveWindow() *ReceiveWindow {
-	return &ReceiveWindow{func(datagram TimestampedDatagram){}, make(chan TimestampedDatagram, 128), make(map[uint32]TimestampedDatagram), 0, 0}
+	return &ReceiveWindow{func(datagram TimestampedDatagram) {}, make(chan TimestampedDatagram, 128), make(map[uint32]TimestampedDatagram), 0, 0}
 }
 
 func (window *ReceiveWindow) AddDatagram(datagram *packets.Datagram) {
@@ -274,7 +281,7 @@ func (window *ReceiveWindow) Tick() {
 		datagram := <-window.pendingDatagrams
 		window.datagrams[datagram.SequenceNumber] = datagram
 	}
-	for i := window.expectedSequenceNumber;; i++ {
+	for i := window.expectedSequenceNumber; ; i++ {
 		if datagram, ok := window.datagrams[i]; ok {
 			go window.DatagramHandleFunction(datagram)
 			window.expectedSequenceNumber++

@@ -2,8 +2,8 @@ package packets
 
 import (
 	"bytes"
-	"github.com/juzi5201314/MineGopher/utils"
 	"github.com/juzi5201314/MineGopher/network/raknet/protocol"
+	"github.com/juzi5201314/MineGopher/utils"
 )
 
 var magic = []byte{0x00, 0xff, 0xff, 0x00, 0xfe, 0xfe, 0xfe, 0xfe, 0xfd, 0xfd, 0xfd, 0xfd, 0x12, 0x34, 0x56, 0x78}

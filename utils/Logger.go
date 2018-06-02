@@ -25,13 +25,15 @@ type Logger struct {
 	closed       bool
 }
 
-var logger *Logger = &Logger{}
+var static_logger *Logger = nil
 
 func NewLogger(file *os.File) *Logger {
+	logger := new(Logger)
 	logger.messageQueue = make(chan string, 10)
 	logger.file = file
 	logger.closed = false
 	go logger.process()
+	static_logger = logger
 	return logger
 }
 
@@ -96,5 +98,5 @@ func (logger *Logger) PacicError(err error) {
 }
 
 func GetLogger() *Logger {
-	return logger
+	return static_logger
 }

@@ -1,16 +1,16 @@
 package server
 
 import (
+	"bytes"
 	"fmt"
+	"github.com/juzi5201314/MineGopher/api"
+	"github.com/juzi5201314/MineGopher/network/query"
 	"github.com/juzi5201314/MineGopher/network/raknet/protocol"
 	"github.com/juzi5201314/MineGopher/network/raknet/protocol/packets"
+	"math/rand"
 	"net"
 	"sync"
 	"time"
-	"math/rand"
-	"bytes"
-	"github.com/juzi5201314/MineGopher/network/query"
-	"github.com/juzi5201314/MineGopher/api"
 )
 
 const (
@@ -25,7 +25,7 @@ type RaknetServer struct {
 	ipBlockList map[string]*net.UDPAddr
 	running     bool
 	CurrentTick int64
-	id int64
+	id          int64
 	*sync.RWMutex
 }
 
@@ -37,7 +37,7 @@ func New(ip string, port int) *RaknetServer {
 		sessions:    Sessions{},
 		Timeout:     time.Second * TIMEOUT,
 		ipBlockList: map[string]*net.UDPAddr{},
-		id: rand.NewSource(time.Now().Unix()).Int63(),
+		id:          rand.NewSource(time.Now().Unix()).Int63(),
 		RWMutex:     &sync.RWMutex{},
 	}
 }
@@ -132,7 +132,6 @@ func (server *RaknetServer) processPacket() {
 		switch pid {
 		case packets.UNCONNECTED_PING:
 			packet = packets.NewUnconnectedPing()
-			println(pid)
 		case packets.OPEN_CONNECTION_REQUEST_1:
 			packet = packets.NewOpenConnectionRequest1()
 		case packets.OPEN_CONNECTION_REQUEST_2:
@@ -140,7 +139,6 @@ func (server *RaknetServer) processPacket() {
 		}
 	}
 	if packet == nil {
-		println(buffer[0])
 		if bytes.Equal(buffer[0:2], query.Header) {
 			if !api.GetServer().GetConfig().Get("enable-query", true).(bool) {
 				return
@@ -154,7 +152,6 @@ func (server *RaknetServer) processPacket() {
 	if packet.HasMagic() {
 		HandleUnconnectedMessage(packet, addr, server)
 	} else if session, exists := server.sessions.GetSession(addr); exists {
-
 		if datagram, ok := packet.(*packets.Datagram); ok {
 			session.ReceiveWindow.AddDatagram(datagram)
 		} else if ack, ok := packet.(*packets.ACK); ok {

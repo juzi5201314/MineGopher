@@ -1,7 +1,10 @@
 package protocol
 
 type DataPacket interface {
-	New() *DataPacket
 	Encode()
+	EncodeHeader()
 	Decode()
+	DecodeHeader()
+	SetBuffer([]byte)
+	GetBuffer() []byte
 }

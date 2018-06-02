@@ -5,10 +5,10 @@ import (
 )
 
 type NACK struct {
-*AcknowledgementPacket
+	*AcknowledgementPacket
 }
 
 func NewNACK() *NACK {
-return &NACK{
-&AcknowledgementPacket{protocol.NewPacket(FLAG_DATAGRAM_NACK), []uint32{}}}
+	return &NACK{
+		&AcknowledgementPacket{protocol.NewPacket(FLAG_DATAGRAM_NACK), []uint32{}}}
 }

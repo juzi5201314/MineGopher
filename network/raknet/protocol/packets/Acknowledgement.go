@@ -8,7 +8,7 @@ import (
 
 type AcknowledgementPacket struct {
 	*protocol.Packet
-Packets []uint32
+	Packets []uint32
 }
 
 func (packet *AcknowledgementPacket) Encode() {

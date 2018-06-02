@@ -6,9 +6,9 @@ import (
 
 type UnconnectedPong struct {
 	*UnconnectedMessage
-	PingTime        int64
-	ServerId		int64
-	PongData		string
+	PingTime int64
+	ServerId int64
+	PongData string
 }
 
 func NewUnconnectedPong() *UnconnectedPong {

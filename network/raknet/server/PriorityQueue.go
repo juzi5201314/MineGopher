@@ -1,18 +1,16 @@
 package server
 
 import (
-	"math"
 	"github.com/juzi5201314/MineGopher/network/raknet/protocol/packets"
+	"math"
 )
 
 const (
-	PriorityImmediate Priority = iota
+	PriorityImmediate byte = iota
 	PriorityHigh
 	PriorityMedium
 	PriorityLow
 )
-
-type Priority byte
 
 type PriorityQueue chan *packets.EncapsulatedPacket
 

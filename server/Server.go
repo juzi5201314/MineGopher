@@ -1,11 +1,11 @@
 package server
 
 import (
+	"github.com/juzi5201314/MineGopher/api"
 	"github.com/juzi5201314/MineGopher/network"
 	raknet "github.com/juzi5201314/MineGopher/network/raknet/server"
 	"github.com/juzi5201314/MineGopher/utils"
 	"os"
-	"github.com/juzi5201314/MineGopher/api"
 )
 
 const (
@@ -120,7 +120,6 @@ func (server *Server) GetConfig() *utils.Config {
 	return server.config
 }
 
-
 func (server *Server) GetNetWork() api.NetWork {
 	return server.network
 }
@@ -133,6 +132,9 @@ func (server *Server) GetName() string {
 	return ServerName
 }
 
+func (server *Server) GetLogger() *utils.Logger {
+	return server.logger
+}
 /*
 // GetMinecraftVersion returns the latest Minecraft game version.
 // It is prefixed with a 'v', for example: "v1.2.10.1"

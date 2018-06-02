@@ -1,12 +1,12 @@
 package server
 
 import (
+	"fmt"
+	"github.com/juzi5201314/MineGopher/api"
+	"github.com/juzi5201314/MineGopher/network/raknet/protocol"
 	"github.com/juzi5201314/MineGopher/network/raknet/protocol/packets"
 	"net"
 	"time"
-	"fmt"
-	"github.com/juzi5201314/MineGopher/network/raknet/protocol"
-	"github.com/juzi5201314/MineGopher/api"
 )
 
 const (

@@ -51,7 +51,7 @@ func main() {
 	}()
 	signal.Notify(signalChan, syscall.SIGINT, syscall.SIGTERM, syscall.SIGKILL)
 
-	utils.GetLogger().Info("Server startup done! Use:", time.Now().Sub(startTime))
+	server.GetLogger().Info("Server startup done! Use:", time.Now().Sub(startTime))
 
 	for range time.NewTicker(time.Second / 20).C {
 		if !server.IsRunning() {

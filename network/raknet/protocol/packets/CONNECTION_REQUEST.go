@@ -6,9 +6,9 @@ import (
 
 type ConnectionRequest struct {
 	*protocol.Packet
-	ClientId uint64
+	ClientId     uint64
 	PingSendTime uint64
-	Security byte
+	Security     byte
 }
 
 func NewConnectionRequest() *ConnectionRequest {
@@ -24,6 +24,5 @@ func (request *ConnectionRequest) Encode() {
 func (request *ConnectionRequest) Decode() {
 	request.DecodeStep()
 	request.ClientId = request.GetUnsignedLong()
-request.PingSendTime = request.GetUnsignedLong()
+	request.PingSendTime = request.GetUnsignedLong()
 }
-
