@@ -1,9 +1,9 @@
-package protocol
+package stream
 
 import (
 	"github.com/golang/geo/r3"
 	"github.com/google/uuid"
-	"github.com/juzi5201314/MineGopher/entity"
+	"github.com/juzi5201314/MineGopher/entity/data"
 	"github.com/juzi5201314/MineGopher/item"
 	"github.com/juzi5201314/MineGopher/math"
 	"github.com/juzi5201314/MineGopher/nbt"
@@ -55,26 +55,26 @@ func (stream *PacketStream) GetBlockPosition() math.Position {
 	return math.NewPosition(stream.GetVarInt(), stream.GetUnsignedVarInt(), stream.GetVarInt())
 }
 
-func (stream *PacketStream) PutEntityRotation(rotation entity.Rotation) {
+func (stream *PacketStream) PutEntityRotation(rotation data.Rotation) {
 	stream.PutLittleFloat(float32(rotation.Pitch))
 	stream.PutLittleFloat(float32(rotation.Yaw))
 }
 
-func (stream *PacketStream) GetEntityRotation() entity.Rotation {
-	return entity.Rotation{Yaw: float64(stream.GetLittleFloat()), HeadYaw: 0, Pitch: float64(stream.GetLittleFloat())}
+func (stream *PacketStream) GetEntityRotation() data.Rotation {
+	return data.Rotation{Yaw: float64(stream.GetLittleFloat()), HeadYaw: 0, Pitch: float64(stream.GetLittleFloat())}
 }
 
-func (stream *PacketStream) PutPlayerRotation(rot entity.Rotation) {
+func (stream *PacketStream) PutPlayerRotation(rot data.Rotation) {
 	stream.PutLittleFloat(float32(rot.Pitch))
 	stream.PutLittleFloat(float32(rot.Yaw))
 	stream.PutLittleFloat(float32(rot.HeadYaw))
 }
 
-func (stream *PacketStream) GetPlayerRotation() entity.Rotation {
-	return entity.Rotation{Yaw: float64(stream.GetLittleFloat()), Pitch: float64(stream.GetLittleFloat()), HeadYaw: float64(stream.GetLittleFloat())}
+func (stream *PacketStream) GetPlayerRotation() data.Rotation {
+	return data.Rotation{Yaw: float64(stream.GetLittleFloat()), Pitch: float64(stream.GetLittleFloat()), HeadYaw: float64(stream.GetLittleFloat())}
 }
 
-func (stream *PacketStream) PutAttributeMap(m entity.AttributeMap) {
+func (stream *PacketStream) PutAttributeMap(m data.AttributeMap) {
 	stream.PutUnsignedVarInt(uint32(len(m)))
 	for _, v := range m {
 		stream.PutLittleFloat(v.MinValue)
@@ -85,16 +85,16 @@ func (stream *PacketStream) PutAttributeMap(m entity.AttributeMap) {
 	}
 }
 
-func (stream *PacketStream) GetAttributeMap() entity.AttributeMap {
-	m := entity.NewAttributeMap()
+func (stream *PacketStream) GetAttributeMap() data.AttributeMap {
+	m := data.NewAttributeMap()
 	c := stream.GetUnsignedVarInt()
 	for i := uint32(0); i < c; i++ {
 		min := stream.GetLittleFloat()
 		max := stream.GetLittleFloat()
 		value := stream.GetLittleFloat()
 		defaultValue := stream.GetLittleFloat()
-		name := entity.AttributeName(stream.GetString())
-		att := entity.NewAttribute(name, value, max)
+		name := data.AttributeName(stream.GetString())
+		att := data.NewAttribute(name, value, max)
 		att.DefaultValue = defaultValue
 		att.MinValue = min
 		m.SetAttribute(att)

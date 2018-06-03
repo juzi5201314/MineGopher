@@ -1,4 +1,4 @@
-package api
+package network
 
 import "github.com/juzi5201314/MineGopher/network/protocol"
 

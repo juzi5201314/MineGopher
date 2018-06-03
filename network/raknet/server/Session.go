@@ -2,13 +2,13 @@ package server
 
 import (
 	"fmt"
-	"github.com/juzi5201314/MineGopher/api"
+	"github.com/juzi5201314/MineGopher/api/server"
 	"github.com/juzi5201314/MineGopher/network/raknet/protocol"
 	"github.com/juzi5201314/MineGopher/network/raknet/protocol/packets"
-	"github.com/juzi5201314/MineGopher/player"
 	"net"
 	"sync"
 	"time"
+	"github.com/juzi5201314/MineGopher/entity"
 )
 
 type Session struct {
@@ -24,7 +24,7 @@ type Session struct {
 	CurrentPing int64
 	LastUpdate  time.Time
 	closed      bool
-	player      *player.Player
+	player      *entity.Player
 }
 
 type Queues struct {
@@ -77,7 +77,7 @@ func NewSession(addr *net.UDPAddr, mtuSize int16, server *RaknetServer) *Session
 		false,
 		nil,
 	}
-	session.player = &player.Player{Session: session}
+	session.player = &entity.Player{Entity: entity.New(entity.PLAYER), Session: session}
 	session.ReceiveWindow.DatagramHandleFunction = func(datagram TimestampedDatagram) {
 		session.LastUpdate = time.Now()
 		session.SendACK(datagram.SequenceNumber)
@@ -152,7 +152,7 @@ func (session *Session) HandleEncapsulated(packet *packets.EncapsulatedPacket, t
 	case packets.DISCONNECT_NOTIFICATION:
 		session.Close()
 	default:
-		session.player.HandlePacket(api.GetServer().GetNetWork().RaknetPacketToMinecraftPaket(packet.Buffer))
+		session.player.HandlePacket(server.GetServer().GetNetWork().RaknetPacketToMinecraftPaket(packet.Buffer))
 	}
 }
 

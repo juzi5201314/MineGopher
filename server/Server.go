@@ -1,11 +1,15 @@
 package server
 
 import (
-	"github.com/juzi5201314/MineGopher/api"
-	"github.com/juzi5201314/MineGopher/network"
-	raknet "github.com/juzi5201314/MineGopher/network/raknet/server"
-	"github.com/juzi5201314/MineGopher/utils"
+	api "github.com/juzi5201314/MineGopher/api/server"
+	"github.com/juzi5201314/MineGopher/level"
 	"os"
+	networkapi "github.com/juzi5201314/MineGopher/api/network"
+	raknet "github.com/juzi5201314/MineGopher/network/raknet/server"
+	raknetapi "github.com/juzi5201314/MineGopher/api/network/raknet"
+	"github.com/juzi5201314/MineGopher/utils"
+	"github.com/juzi5201314/MineGopher/network"
+	"github.com/juzi5201314/MineGopher/api/player"
 )
 
 const (
@@ -24,10 +28,13 @@ type Server struct {
 	resourecePackPath string
 	serverPath        string
 	config            *utils.Config
-	network           *network.NetWork
+	network           networkapi.NetWork
 	ip                string
 	port              int
-	raknetServer      *raknet.RaknetServer
+	raknetServer      raknetapi.RaknetServer
+
+	levels map[string]*level.Level
+	defaultLevel string
 }
 
 func New(serverPath string, config *utils.Config, logger *utils.Logger) *Server {
@@ -41,6 +48,7 @@ func New(serverPath string, config *utils.Config, logger *utils.Logger) *Server 
 	server.playersPath = serverPath + "/players/"
 	server.worldsPath = serverPath + "/worlds/"
 	server.resourecePackPath = serverPath + "/resoureces_pack/"
+	server.levels = map[string]*level.Level{}
 
 	server.ip = config.Get("ip", "0.0.0.0").(string)
 	server.port = config.Get("port", 19132).(int)
@@ -97,7 +105,11 @@ func (server *Server) Start() {
 	server.logger.Info("MineGopher " + ServerVersion + ", running on " + server.serverPath)
 	server.isRunning = true
 
-	server.network = network.New(server)
+	server.defaultLevel = server.config.Get("level-name", "world").(string)
+	dl := level.NewLevel(server.worldsPath + server.defaultLevel, server.defaultLevel)
+	server.levels[server.defaultLevel] = dl
+
+	server.network = network.New()
 	server.network.SetName(server.config.Get("motd", "MineGopher Server For Minecraft: PE").(string))
 	server.raknetServer = raknet.New(server.GetIp(), server.GetPort())
 	server.raknetServer.Start()
@@ -120,11 +132,15 @@ func (server *Server) GetConfig() *utils.Config {
 	return server.config
 }
 
-func (server *Server) GetNetWork() api.NetWork {
+func (server *Server) GetAllPlayer() map[string]player.Player {
+	return server.raknetServer.GetPlayers()
+}
+
+func (server *Server) GetNetWork() networkapi.NetWork {
 	return server.network
 }
 
-func (server *Server) GetRaknetServer() api.RaknetServer {
+func (server *Server) GetRaknetServer() raknetapi.RaknetServer {
 	return server.raknetServer
 }
 
@@ -134,6 +150,18 @@ func (server *Server) GetName() string {
 
 func (server *Server) GetLogger() *utils.Logger {
 	return server.logger
+}
+
+func (server *Server) GetLevels() map[string]*level.Level {
+	return server.levels
+}
+
+func (server *Server) GetLevel(name string) *level.Level {
+	return server.levels[name]
+}
+
+func (server *Server) GetDefaultLevel() *level.Level {
+	return server.GetLevel(server.defaultLevel)
 }
 
 /*

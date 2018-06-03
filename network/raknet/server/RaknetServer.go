@@ -3,7 +3,7 @@ package server
 import (
 	"bytes"
 	"fmt"
-	"github.com/juzi5201314/MineGopher/api"
+	apiserver "github.com/juzi5201314/MineGopher/api/server"
 	"github.com/juzi5201314/MineGopher/network/query"
 	"github.com/juzi5201314/MineGopher/network/raknet/protocol"
 	"github.com/juzi5201314/MineGopher/network/raknet/protocol/packets"
@@ -11,6 +11,7 @@ import (
 	"net"
 	"sync"
 	"time"
+	"github.com/juzi5201314/MineGopher/api/player"
 )
 
 const (
@@ -55,6 +56,14 @@ func (server *RaknetServer) Start() {
 
 func (server *RaknetServer) Close() {
 	server.running = false
+}
+
+func (server *RaknetServer) GetPlayers() map[string]player.Player {
+	players := map[string]player.Player{}
+	for _, session := range server.sessions {
+		players[session.player.GetName()] = session.player
+	}
+	return players
 }
 
 func (server *RaknetServer) BlockIp(addr *net.UDPAddr, t time.Duration) {
@@ -140,7 +149,7 @@ func (server *RaknetServer) processPacket() {
 	}
 	if packet == nil {
 		if bytes.Equal(buffer[0:2], query.Header) {
-			if !api.GetServer().GetConfig().Get("enable-query", true).(bool) {
+			if !apiserver.GetServer().GetConfig().Get("enable-query", true).(bool) {
 				return
 			}
 			println("query")

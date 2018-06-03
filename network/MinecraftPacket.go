@@ -5,10 +5,11 @@ import (
 	"compress/zlib"
 	"errors"
 	"fmt"
-	"github.com/juzi5201314/MineGopher/api"
+	
 	"github.com/juzi5201314/MineGopher/network/protocol"
 	"github.com/juzi5201314/MineGopher/utils"
 	"io/ioutil"
+	"github.com/juzi5201314/MineGopher/api/server"
 )
 
 type MinecraftPacket struct {
@@ -29,6 +30,14 @@ func (packet *MinecraftPacket) GetId() byte {
 	return packet.id
 }
 
+func (packet *MinecraftPacket) GetBuffer() []byte {
+	return packet.Buffer
+}
+
+func (packet *MinecraftPacket) SetBuffer(buffer []byte) {
+	packet.Buffer = buffer
+}
+
 func (packet *MinecraftPacket) GetProtocol() int32 {
 	return packet.protocol
 }
@@ -39,7 +48,7 @@ func (packet *MinecraftPacket) Decode() {
 	}
 	packet.raw = packet.Buffer[packet.Offset:]
 	if err := packet.decompress(); err != nil {
-		api.GetServer().GetLogger().PacicError(err)
+		server.GetServer().GetLogger().PacicError(err)
 	}
 
 	packet.ResetStream()
@@ -62,13 +71,12 @@ func (packet *MinecraftPacket) fetchPackets(packetData [][]byte) {
 
 		var pk protocol.DataPacket
 
-		switch packet.id {
-		case protocol.GetPacketId(protocol.LOGIN_PACKET):
-			pk = &protocol.LoginPacket{Packet: protocol.NewPacket(packet.id)}
-			break
-		default:
-			api.GetServer().GetLogger().Debug(fmt.Sprintf("0x%x \n", packet.id))
+		pkfn, has := server.GetServer().GetNetWork().GetPacket(packet.id)
+		if !has {
+			server.GetServer().GetLogger().Debug(fmt.Sprintf("0x%x \n", packet.id))
+			return
 		}
+		pk = pkfn()
 		pk.SetBuffer(data)
 		pk.DecodeHeader()
 		pk.Decode()

@@ -2,7 +2,7 @@ package server
 
 import (
 	"fmt"
-	"github.com/juzi5201314/MineGopher/api"
+	"github.com/juzi5201314/MineGopher/api/server"
 	"github.com/juzi5201314/MineGopher/network/raknet/protocol"
 	"github.com/juzi5201314/MineGopher/network/raknet/protocol/packets"
 	"net"
@@ -25,13 +25,13 @@ func HandleUnconnectedMessage(packetInterface protocol.DataPacket, addr *net.UDP
 	}
 }
 
-func handleUnconnectedPing(addr *net.UDPAddr, server *RaknetServer) {
+func handleUnconnectedPing(addr *net.UDPAddr, rs *RaknetServer) {
 	pong := packets.NewUnconnectedPong()
 	pong.PingTime = time.Now().Unix()
-	pong.ServerId = server.id
-	pong.PongData = api.GetServer().GetNetWork().GetName()
+	pong.ServerId = rs.id
+	pong.PongData = server.GetServer().GetNetWork().GetName()
 	pong.Encode()
-	server.udpServer.Write(addr, pong.Buffer)
+	rs.udpServer.Write(addr, pong.Buffer)
 }
 
 func handleOpenConnectionRequest1(request *packets.OpenConnectionRequest1, addr *net.UDPAddr, server *RaknetServer) {

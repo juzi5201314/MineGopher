@@ -1,12 +1,14 @@
 package protocol
 
+import "github.com/juzi5201314/MineGopher/network/protocol/stream"
+
 type Packet struct {
-	*PacketStream
+	*stream.PacketStream
 	id byte
 }
 
 func NewPacket(id byte) *Packet {
-	return &Packet{NewPacketStream(), id}
+	return &Packet{stream.NewPacketStream(), id}
 }
 
 func (packet *Packet) EncodeHeader() {
