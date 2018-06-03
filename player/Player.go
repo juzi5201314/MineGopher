@@ -1,24 +1,24 @@
 package player
 
 import (
-	"github.com/juzi5201314/MineGopher/api"
-	"github.com/juzi5201314/MineGopher/network/protocol"
 	"github.com/google/uuid"
+	"github.com/juzi5201314/MineGopher/api"
 	"github.com/juzi5201314/MineGopher/network"
+	"github.com/juzi5201314/MineGopher/network/protocol"
 )
 
 type Player struct {
 	Session api.Session
 
-	protocol int32
-	username string
-	skin_id string
-	skin_data []byte
-	cape_data []byte
-	client_UUID        uuid.UUID
-	client_id          int
+	protocol    int32
+	username    string
+	skin_id     string
+	skin_data   []byte
+	cape_data   []byte
+	client_UUID uuid.UUID
+	client_id   int
 	XUID        string
-	language string
+	language    string
 
 	nameTag string
 }
@@ -32,7 +32,7 @@ func (player *Player) HandlePacket(mpk api.MinecraftPacket) {
 				return
 			}
 			player.onLogin(pk.(*protocol.LoginPacket))
-		break
+			break
 		}
 	}
 }
@@ -61,7 +61,7 @@ func (player *Player) SendPacket(packet protocol.DataPacket) {
 }
 
 func (player *Player) SendBatch(packet *network.MinecraftPacket) {
-	player.Session.SendPacket(packet, 0x02, 0x02)
+	player.Session.SendPacket(packet, 2, 3)
 }
 
 func (player *Player) Spawn() {

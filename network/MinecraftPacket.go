@@ -4,19 +4,19 @@ import (
 	"bytes"
 	"compress/zlib"
 	"errors"
-	"io/ioutil"
-	"github.com/juzi5201314/MineGopher/utils"
+	"fmt"
 	"github.com/juzi5201314/MineGopher/api"
 	"github.com/juzi5201314/MineGopher/network/protocol"
-	"fmt"
+	"github.com/juzi5201314/MineGopher/utils"
+	"io/ioutil"
 )
 
 type MinecraftPacket struct {
 	*utils.Stream
-	raw []byte
+	raw      []byte
 	protocol int32
-	id byte
-	packets []protocol.DataPacket
+	id       byte
+	packets  []protocol.DataPacket
 }
 
 func NewMinecraftPacket() *MinecraftPacket {

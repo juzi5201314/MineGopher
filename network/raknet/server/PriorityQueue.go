@@ -1,6 +1,7 @@
 package server
 
 import (
+	"fmt"
 	"github.com/juzi5201314/MineGopher/network/raknet/protocol/packets"
 	"math"
 )
@@ -55,6 +56,7 @@ func (queue *PriorityQueue) Flush(session *Session) {
 		datagram := datagrams[j]
 		datagram.Encode()
 		session.RecoveryQueue.AddRecovery(datagram)
+		fmt.Println(datagram.Buffer)
 		session.Server.udpServer.Write(session.UDPAddr, datagram.Buffer)
 	}
 }

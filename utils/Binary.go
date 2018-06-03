@@ -1,6 +1,8 @@
 package utils
 
-import "math"
+import (
+	"math"
+)
 
 const (
 	BigEndian EndianType = iota
@@ -120,7 +122,6 @@ func WriteInt(buffer *[]byte, int int32) {
 	b[3] = byte(v)
 
 	*buffer = append(*buffer, b...)
-
 }
 
 func ReadInt(buffer *[]byte, offset *int) int32 {

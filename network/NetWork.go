@@ -50,4 +50,3 @@ func (network *NetWork) RaknetPacketToMinecraftPaket(buffer []byte) api.Minecraf
 	packet.Decode()
 	return packet
 }
-

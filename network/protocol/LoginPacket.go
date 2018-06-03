@@ -1,12 +1,12 @@
 package protocol
 
 import (
+	"encoding/base64"
+	"encoding/json"
 	"github.com/google/uuid"
 	"github.com/juzi5201314/MineGopher/network/protocol/types"
-	"encoding/json"
-	"encoding/base64"
-	"strings"
 	"github.com/juzi5201314/MineGopher/utils"
+	"strings"
 )
 
 type LoginPacket struct {

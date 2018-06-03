@@ -135,6 +135,7 @@ func (server *Server) GetName() string {
 func (server *Server) GetLogger() *utils.Logger {
 	return server.logger
 }
+
 /*
 // GetMinecraftVersion returns the latest Minecraft game version.
 // It is prefixed with a 'v', for example: "v1.2.10.1"

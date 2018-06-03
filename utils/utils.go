@@ -1,9 +1,9 @@
 package utils
 
 import (
-	"strings"
 	"encoding/base64"
 	"encoding/json"
+	"strings"
 )
 
 func DecodeJwtPayload(v string, t interface{}) {

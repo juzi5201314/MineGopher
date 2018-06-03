@@ -6,7 +6,7 @@ type Packet struct {
 }
 
 func NewPacket(id byte) *Packet {
-	return &Packet{PacketStream: NewPacketStream()}
+	return &Packet{NewPacketStream(), id}
 }
 
 func (packet *Packet) EncodeHeader() {
