@@ -5,6 +5,7 @@ import (
 	"github.com/juzi5201314/MineGopher/api/network"
 	"github.com/juzi5201314/MineGopher/level"
 	"github.com/juzi5201314/MineGopher/api/network/raknet"
+	"github.com/juzi5201314/MineGopher/api/player"
 )
 
 var server Server = nil
@@ -30,4 +31,5 @@ type Server interface {
 	GetLevels() map[string]*level.Level
 	GetLevel(string) *level.Level
 	GetDefaultLevel() *level.Level
+	GetAllPlayer() map[string]player.Player
 }

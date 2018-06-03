@@ -88,5 +88,8 @@ func (network *NetWork) RegisterPackets() {
 	network.RegisterPacket(protocol.GetPacketId(protocol.REQUEST_CHUNK_RADIUS_PACKET), func() protocol.DataPacket {
 		return &protocol.RequestChunkRadiusPacket{Packet: protocol.NewPacket(protocol.GetPacketId(protocol.REQUEST_CHUNK_RADIUS_PACKET))}
 	})
+	network.RegisterPacket(protocol.GetPacketId(protocol.ADD_PLAYER_PACKET), func() protocol.DataPacket {
+		return &protocol.AddPlayerPacket{Packet: protocol.NewPacket(protocol.GetPacketId(protocol.ADD_PLAYER_PACKET))}
+	})
 }
 

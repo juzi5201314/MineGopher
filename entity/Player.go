@@ -11,6 +11,8 @@ import (
 	"github.com/juzi5201314/MineGopher/math"
 	"github.com/juzi5201314/MineGopher/api"
 	"github.com/juzi5201314/MineGopher/level"
+	"github.com/juzi5201314/MineGopher/api/player"
+	gfmath "math"
 )
 
 type Player struct {
@@ -26,15 +28,16 @@ type Player struct {
 	client_id   int
 	XUID        string
 	language    string
-	nameTag string
+	nameTag     string
+	platform    int
 
-	viewDistance int32
+	viewDistance  int32
 	needLoadChunk bool
 
 	chunkLoader *level.ChunkLoader
 }
 
-func (player *Player) HandlePacket(mpk interface{
+func (player *Player) HandlePacket(mpk interface {
 	GetPackets() []protocol.DataPacket
 }) {
 	for _, pk := range mpk.GetPackets() {
@@ -63,6 +66,7 @@ func (player *Player) HandlePacket(mpk interface{
 				//Completed
 				println(2333)
 				server.GetServer().GetDefaultLevel().GetDimension().LoadChunk(0, 0, func(chunk *chunk.Chunk) {
+					player.Entity.Dimension = server.GetServer().GetDefaultLevel().GetDimension()
 					server.GetServer().GetDefaultLevel().GetDimension().AddEntity(player.Entity, r3.Vector{0, 40, 0})
 					pk := &protocol.StartGamePacket{Packet: protocol.NewPacket(protocol.GetPacketId(protocol.START_GAME_PACKET))}
 					pk.Generator = 1
@@ -103,7 +107,16 @@ func (player *Player) HandlePacket(mpk interface{
 
 			haschunk := player.needLoadChunk
 			player.needLoadChunk = true
-
+			if !haschunk {
+				for _, p := range server.GetServer().GetAllPlayer() {
+					//p.SpawnTo(player)
+					_ = p
+				}
+				//player.SpawnToAll()
+				player.UpdateAttributes()
+				pk := &protocol.PlayStatusPacket{protocol.NewPacket(protocol.GetPacketId(protocol.PLAY_STATUS_PACKET)), 3}
+				player.SendPacket(pk)
+			}
 			break
 		}
 	}
@@ -120,11 +133,12 @@ func (player *Player) onLogin(packet *protocol.LoginPacket) {
 	player.XUID = packet.ClientXUID
 	player.language = packet.Language
 	player.nameTag = packet.Username
-	player.Spawn()
+	player.platform = packet.ClientData.DeviceOS
 
 	player.chunkLoader = level.NewChunkLoader(nil, 0, 0)
 	player.chunkLoader.OnLoad = func(chunk *chunk.Chunk) {
-
+		cpk := &protocol.FullChunkDataPacket{protocol.NewPacket(protocol.GetPacketId(protocol.FULL_CHUNK_DATA_PACKET)), chunk.X, chunk.Z, chunk.ToBinary()}
+		player.SendPacket(cpk)
 	}
 
 	pk := &protocol.PlayStatusPacket{protocol.NewPacket(protocol.GetPacketId(protocol.PLAY_STATUS_PACKET)), 0}
@@ -141,10 +155,6 @@ func (player *Player) SendPacket(packet protocol.DataPacket) {
 
 func (player *Player) SendBatch(packet *network.MinecraftPacket) {
 	player.Session.SendPacket(packet, 2, 3)
-}
-
-func (player *Player) Spawn() {
-
 }
 
 func (player *Player) Close() {
@@ -167,7 +177,34 @@ func (player *Player) GetXUID() string {
 	return player.XUID
 }
 
-func (player *Player) Tick() {
+func (player *Player) SpawnTo(p player.Player) {
+	pk := &protocol.AddPlayerPacket{Packet: protocol.NewPacket(protocol.GetPacketId(protocol.ADD_PLAYER_PACKET))}
+	pk.UUID = player.client_UUID
+	pk.DisplayName = player.username
+	pk.Username = player.username
+	pk.EntityRuntimeId = player.GetEid()
+	pk.EntityUniqueId = player.GetUniqueId()
+	pk.Position = player.GetPosition()
+	pk.Rotation = player.GetRotation()
+	pk.Platform = int32(player.platform)
+	pk.Motion = player.GetMotion()
+	player.Entity.SpawnTo(p)
+	player.SendPacket(pk)
+}
 
+func (playe *Player) SpawnToAll() {
+	for _, p := range playe.viewers {
+		if p.GetUUID() == playe.GetUUID() {
+			continue
+		}
+		playe.SpawnTo(p.(player.Player))
+	}
+}
+
+func (player *Player) Tick() {
+	if player.needLoadChunk && !player.closed {
+		player.chunkLoader.Warp(player.Dimension, int32(gfmath.Floor(player.Position.X))>>4, int32(gfmath.Floor(player.Position.Z))>>4)
+		player.chunkLoader.Request(player.viewDistance, 3)
+	}
 	player.Entity.Tick()
 }

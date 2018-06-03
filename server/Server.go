@@ -358,7 +358,9 @@ func (server *Server) GetCommandManager() command {
 **/
 
 func (server *Server) Tick() {
-
+	for _, p := range server.GetAllPlayer() {
+		p.Tick()
+	}
 }
 
 func (server *Server) mkdirs() {

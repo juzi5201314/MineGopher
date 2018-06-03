@@ -61,6 +61,8 @@ func (entity Entity) Tick() {
 
 }
 
+
+//这sb函数有毒
 func (entity Entity) SetDimension(v interface {
 	GetChunk(int32, int32) (*chunk.Chunk, bool)
 }) {
@@ -115,7 +117,7 @@ func (entity *Entity) GetPosition() r3.Vector {
 func (entity *Entity) SetPosition(v r3.Vector) error {
 	var newChunkX = int32(math.Floor(float64(v.X))) >> 4
 	var newChunkZ = int32(math.Floor(float64(v.Z))) >> 4
-
+	entity.GetDimension().GetName()
 	var oldChunk = entity.GetChunk()
 	var newChunk, ok = entity.Dimension.GetChunk(newChunkX, newChunkZ)
 	if !ok {
@@ -231,6 +233,13 @@ func (entity *Entity) GetMotion() r3.Vector {
 
 func (entity *Entity) SetMotion(v r3.Vector) {
 	entity.Motion = v
+}
+
+func (entity *Entity) UpdateAttributes() {
+	pk := &protocol.UpdateAttributesPacket{protocol.NewPacket(protocol.GetPacketId(protocol.UPDATE_ATTRIBUTES_PACKET)), entity.eid, entity.attributeMap}
+	for _, p := range entity.viewers {
+		p.SendPacket(pk)
+	}
 }
 
 

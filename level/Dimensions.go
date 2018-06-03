@@ -93,7 +93,6 @@ func (dimension *Dimension) GetViewer(uuid uuid.UUID) (chunk.Viewer, bool) {
 func (dimension *Dimension) AddEntity(entity chunk.IEntity, position r3.Vector) {
 	var x, z = int32(math.Floor(position.X)) >> 4, int32(math.Floor(position.Z)) >> 4
 	dimension.LoadChunk(x, z, func(chunk *chunk.Chunk) {
-		entity.SetDimension(dimension)
 		entity.SetPosition(position)
 		entity.SpawnToAll()
 
@@ -161,6 +160,9 @@ func (dimension *Dimension) SetChunk(x, z int32, chunk *chunk.Chunk) {
 
 // GetChunk returns a chunk in the dimension at the given chunk X and Z.
 func (dimension *Dimension) GetChunk(x, z int32) (*chunk.Chunk, bool) {
+	if dimension == nil {
+		println(414)
+	}
 	return dimension.chunkProvider.GetChunk(x, z)
 }
 
