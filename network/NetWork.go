@@ -91,5 +91,8 @@ func (network *NetWork) RegisterPackets() {
 	network.RegisterPacket(protocol.GetPacketId(protocol.ADD_PLAYER_PACKET), func() protocol.DataPacket {
 		return &protocol.AddPlayerPacket{Packet: protocol.NewPacket(protocol.GetPacketId(protocol.ADD_PLAYER_PACKET))}
 	})
+network.RegisterPacket(protocol.GetPacketId(protocol.MOVE_PLAYER_PACKET), func() protocol.DataPacket {
+		return &protocol.MovePlayerPacket{Packet: protocol.NewPacket(protocol.GetPacketId(protocol.MOVE_PLAYER_PACKET))}
+	})
 }
 

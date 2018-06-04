@@ -21,6 +21,11 @@ func NewConfig(filename string, ctype int, data map[string]interface{}) *Config 
 	return config
 }
 
+type KV struct {
+Key string
+Value interface{}
+}
+
 type Config struct {
 	filepath string
 	ctype    int
@@ -31,7 +36,7 @@ type Config struct {
 
 func (config *Config) load() {
 	_, err := os.Stat(config.filepath)
-	file, ferr := os.OpenFile(config.filepath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0700)
+	file, ferr := os.OpenFile(config.filepath, os.O_CREATE | os.O_RDWR, 0700)
 	if ferr != nil {
 		panic(ferr)
 	}
@@ -44,8 +49,20 @@ func (config *Config) load() {
 		file.Close()
 	} else if err == nil {
 		buffer := make([]byte, 102400)
-		file.Read(buffer)
-		config.Unmarshal(buffer, config.data)
+		n, err := file.Read(buffer)
+if err != nil {
+panic(err)
+}
+olddata := config.data
+config.data = map[string]interface{}{}
+		config.Unmarshal(buffer[:n], config.data)
+
+for k, v := range olddata {
+if _, has := config.data[k]; !has {
+config.data[k] = v
+}
+}
+
 	}
 }
 
@@ -80,7 +97,11 @@ func (config *Config) Marshal(data interface{}) []byte {
 	case JSON:
 		d, err = json.Marshal(data)
 	case XML:
-		d, err = xml.Marshal(data)
+sts := make([]KV, 0)
+for k, v := range data.(map[string]interface{}) {
+sts = append(sts, KV{k, v})
+}
+d, err = xml.MarshalIndent(sts, "", "\n")
 	default:
 		err = errors.New("Type not found")
 	}
@@ -90,7 +111,7 @@ func (config *Config) Marshal(data interface{}) []byte {
 	return d
 }
 
-func (config *Config) Unmarshal(buffer []byte, out interface{}) {
+func (config *Config) Unmarshal(buffer []byte, out map[string]interface{}) {
 	switch config.ctype {
 	case YMAL:
 		yaml.Unmarshal(buffer, out)

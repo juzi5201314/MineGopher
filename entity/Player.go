@@ -33,6 +33,7 @@ type Player struct {
 
 	viewDistance  int32
 	needLoadChunk bool
+	OnGround bool
 
 	chunkLoader *level.ChunkLoader
 }
@@ -116,6 +117,12 @@ func (player *Player) HandlePacket(mpk interface {
 				player.UpdateAttributes()
 				pk := &protocol.PlayStatusPacket{protocol.NewPacket(protocol.GetPacketId(protocol.PLAY_STATUS_PACKET)), 3}
 				player.SendPacket(pk)
+			}
+			break
+		case *protocol.MovePlayerPacket:
+
+			for _, v := range player.GetViewers() {
+				v.SendPacket(pk.(*protocol.MovePlayerPacket))
 			}
 			break
 		}
@@ -207,4 +214,30 @@ func (player *Player) Tick() {
 		player.chunkLoader.Request(player.viewDistance, 3)
 	}
 	player.Entity.Tick()
+}
+
+func (player *Player) Move(x, y, z float64, pitch, yaw, headYaw float64, onGround bool) {
+	newChunk, _ := player.Dimension.GetChunk(int32(gfmath.Floor(x)) >> 4, int32(gfmath.Floor(z)) >> 4)
+	if player.GetChunk() != newChunk {
+		player.GetChunk().RemoveViewer(player)
+		newChunk.AddViewer(player)
+		for _, entity := range newChunk.GetEntities() {
+			e := entity.(protocol.AddEntityEntry)
+			pk := &protocol.AddEntityPacket{Packet: protocol.NewPacket(protocol.GetPacketId(protocol.ADD_ENTITY_PACKET))}
+			pk.UniqueId = e.GetUniqueId()
+			pk.RuntimeId = e.GetEid()
+			pk.EntityType = e.GetId()
+			pk.Position = e.GetPosition()
+			pk.Motion = e.GetMotion()
+			pk.Rotation = e.GetRotation()
+			pk.Attributes = e.GetAttributeMap()
+			pk.EntityData = e.GetEntityData()
+			player.SendPacket(pk)
+		}
+	}
+	player.SetPosition(r3.Vector{x, y, z})
+	player.Rotation.Pitch += float64(pitch)
+	player.Rotation.Yaw += float64(yaw)
+	player.Rotation.HeadYaw = float64(headYaw)
+	player.OnGround = onGround
 }

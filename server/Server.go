@@ -10,6 +10,7 @@ import (
 	"github.com/juzi5201314/MineGopher/utils"
 	"github.com/juzi5201314/MineGopher/network"
 	"github.com/juzi5201314/MineGopher/api/player"
+"strconv"
 )
 
 const (
@@ -50,8 +51,8 @@ func New(serverPath string, config *utils.Config, logger *utils.Logger) *Server 
 	server.resourecePackPath = serverPath + "/resoureces_pack/"
 	server.levels = map[string]*level.Level{}
 
-	server.ip = config.Get("ip", "0.0.0.0").(string)
-	server.port = config.Get("port", 19132).(int)
+	server.ip = config.Get("server-ip", "0.0.0.0").(string)
+	server.port = config.Get("server-port", 19132).(int)
 	//s.LevelManager = level.NewManager(serverPath)
 	//server.CommandManager = commands.NewManager()
 	//server.CommandReader = command.NewCommandReader(os.Stdin)
@@ -113,6 +114,8 @@ func (server *Server) Start() {
 	server.network.SetName(server.config.Get("motd", "MineGopher Server For Minecraft: PE").(string))
 	server.raknetServer = raknet.New(server.GetIp(), server.GetPort())
 	server.raknetServer.Start()
+
+server.logger.Info("RakNetServer Listen " + server.GetIp() + ":" + strconv.Itoa(server.GetPort()))
 
 	if server.config.Get("enable-query", true).(bool) {
 
