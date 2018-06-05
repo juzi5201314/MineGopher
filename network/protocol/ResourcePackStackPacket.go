@@ -1,6 +1,5 @@
 package protocol
 
-
 import "github.com/juzi5201314/MineGopher/network/protocol/types"
 
 type ResourcePackStackPacket struct {

@@ -1,11 +1,11 @@
 package server
 
 import (
-	"github.com/juzi5201314/MineGopher/utils"
 	"github.com/juzi5201314/MineGopher/api/network"
-	"github.com/juzi5201314/MineGopher/level"
 	"github.com/juzi5201314/MineGopher/api/network/raknet"
 	"github.com/juzi5201314/MineGopher/api/player"
+	"github.com/juzi5201314/MineGopher/level"
+	"github.com/juzi5201314/MineGopher/utils"
 )
 
 var server Server = nil
@@ -32,4 +32,7 @@ type Server interface {
 	GetLevel(string) *level.Level
 	GetDefaultLevel() *level.Level
 	GetAllPlayer() map[string]player.Player
+	GetPath() string
+	GetIp() string
+	GetPort() int
 }

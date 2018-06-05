@@ -1,10 +1,10 @@
 package protocol
 
 import (
-	"github.com/golang/geo/r3"
-	"github.com/juzi5201314/MineGopher/network/protocol/types"
 	"encoding/base64"
+	"github.com/golang/geo/r3"
 	"github.com/juzi5201314/MineGopher/math"
+	"github.com/juzi5201314/MineGopher/network/protocol/types"
 )
 
 type StartGamePacket struct {
@@ -46,7 +46,6 @@ type StartGamePacket struct {
 	HasPlatformBroadcast   bool
 	PlatformBroadcastMode  uint32
 }
-
 
 func (pk *StartGamePacket) Encode() {
 	pk.PutEntityUniqueId(pk.EntityUniqueId)

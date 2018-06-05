@@ -5,11 +5,11 @@ import (
 	"compress/zlib"
 	"errors"
 	"fmt"
-	
+
+	"github.com/juzi5201314/MineGopher/api/server"
 	"github.com/juzi5201314/MineGopher/network/protocol"
 	"github.com/juzi5201314/MineGopher/utils"
 	"io/ioutil"
-	"github.com/juzi5201314/MineGopher/api/server"
 )
 
 type MinecraftPacket struct {
@@ -48,7 +48,7 @@ func (packet *MinecraftPacket) Decode() {
 	}
 	packet.raw = packet.Buffer[packet.Offset:]
 	if err := packet.decompress(); err != nil {
-		server.GetServer().GetLogger().PacicError(err)
+		server.GetServer().GetLogger().PanicError(err)
 	}
 
 	packet.ResetStream()

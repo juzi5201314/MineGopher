@@ -5,7 +5,6 @@ type RequestChunkRadiusPacket struct {
 	Radius int32
 }
 
-
 func (pk *RequestChunkRadiusPacket) Encode() {
 
 }

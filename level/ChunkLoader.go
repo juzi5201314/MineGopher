@@ -1,8 +1,8 @@
 package level
 
 import (
-	"sync"
 	"github.com/juzi5201314/MineGopher/level/chunk"
+	"sync"
 )
 
 type ChunkLoader struct {
@@ -16,7 +16,7 @@ type ChunkLoader struct {
 	// LoadFunction gets called for every chunk loaded by this ChunkLoader.
 	OnLoad func(*chunk.Chunk)
 
-	mutex        sync.RWMutex
+	mutex       sync.RWMutex
 	loadedchunk map[int]*chunk.Chunk
 }
 

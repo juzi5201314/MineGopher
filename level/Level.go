@@ -1,21 +1,21 @@
 package level
 
 import (
-	"os"
-	"github.com/juzi5201314/MineGopher/level/providers"
 	"github.com/juzi5201314/MineGopher/level/generation"
+	"github.com/juzi5201314/MineGopher/level/providers"
+	"os"
 )
 
 type Level struct {
-	path string
-	name string
+	path      string
+	name      string
 	dimension *Dimension
-	gameRules  map[GameRuleName]*GameRule
+	gameRules map[GameRuleName]*GameRule
 }
 
 func NewLevel(path string, name string) *Level {
 	os.MkdirAll(path, 0700)
-	os.MkdirAll(path + "/region", 0700)
+	os.MkdirAll(path+"/region", 0700)
 	level := new(Level)
 	level.name = name
 	level.path = path

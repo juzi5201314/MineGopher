@@ -1,8 +1,8 @@
 package io
 
 import (
-	"github.com/juzi5201314/MineGopher/nbt"
 	"github.com/juzi5201314/MineGopher/level/chunk"
+	"github.com/juzi5201314/MineGopher/nbt"
 )
 
 func GetAnvilChunkFromNBT(compound *nbt.Compound) *chunk.Chunk {

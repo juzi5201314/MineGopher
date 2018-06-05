@@ -2,15 +2,15 @@ package entity
 
 import (
 	"github.com/golang/geo/r3"
-	"math"
-	"sync"
-	"github.com/juzi5201314/MineGopher/nbt"
 	"github.com/google/uuid"
 	"github.com/juzi5201314/MineGopher/level"
+	"github.com/juzi5201314/MineGopher/nbt"
+	"math"
+	"sync"
 
-	"github.com/juzi5201314/MineGopher/network/protocol"
 	"github.com/juzi5201314/MineGopher/entity/data"
 	"github.com/juzi5201314/MineGopher/level/chunk"
+	"github.com/juzi5201314/MineGopher/network/protocol"
 )
 
 var EntityCount uint64 = 0
@@ -21,24 +21,24 @@ type Viewer interface {
 }
 
 type Entity struct {
-	closed bool
-	id uint32
-	eid uint64
+	closed       bool
+	id           uint32
+	eid          uint64
 	attributeMap data.AttributeMap
-	Position r3.Vector
-	Rotation data.Rotation
-	Motion   r3.Vector
-	nameTag string
-	Dimension *level.Dimension
-	nbt *nbt.Compound
-	mutex      sync.RWMutex
-	EntityData map[uint32][]interface{}
-	viewers map[uuid.UUID]Viewer
+	Position     r3.Vector
+	Rotation     data.Rotation
+	Motion       r3.Vector
+	nameTag      string
+	Dimension    *level.Dimension
+	nbt          *nbt.Compound
+	mutex        sync.RWMutex
+	EntityData   map[uint32][]interface{}
+	viewers      map[uuid.UUID]Viewer
 }
 
 func New(id uint32) *Entity {
 	defer func() {
-		EntityCount ++
+		EntityCount++
 	}()
 	return &Entity{
 		false,
@@ -61,7 +61,6 @@ func (entity Entity) Tick() {
 
 }
 
-
 //这sb函数有毒
 func (entity Entity) SetDimension(v interface {
 	GetChunk(int32, int32) (*chunk.Chunk, bool)
@@ -80,7 +79,6 @@ func (entity Entity) Close() {
 func (entity Entity) IsClosed() bool {
 	return entity.closed
 }
-
 
 func (entity Entity) GetId() uint32 {
 	return entity.id
@@ -141,7 +139,6 @@ func (entity *Entity) GetChunk() *chunk.Chunk {
 	return chunk
 }
 
-
 func (entity *Entity) GetHealth() float32 {
 	return entity.attributeMap.GetAttribute(data.AttributeHealth).Value
 }
@@ -200,7 +197,7 @@ func (entity *Entity) SetNBT(nbt *nbt.Compound) {
 }
 
 func (entity *Entity) GetViewers() map[uuid.UUID]Viewer {
-return entity.viewers
+	return entity.viewers
 }
 
 func (entity *Entity) AddViewer(viewer Viewer) {
@@ -220,7 +217,7 @@ func (entity *Entity) GetUniqueId() int64 {
 }
 
 func (entity *Entity) GetRotation() data.Rotation {
-return entity.Rotation
+	return entity.Rotation
 }
 
 func (entity *Entity) SetRotation(v data.Rotation) {
@@ -241,7 +238,6 @@ func (entity *Entity) UpdateAttributes() {
 		p.SendPacket(pk)
 	}
 }
-
 
 /*
 import (

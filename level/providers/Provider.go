@@ -1,9 +1,9 @@
 package providers
 
 import (
-	"sync"
 	"github.com/juzi5201314/MineGopher/level/chunk"
 	"github.com/juzi5201314/MineGopher/level/generation"
+	"sync"
 )
 
 type Provider interface {
@@ -23,7 +23,7 @@ type ChunkProvider struct {
 	generator generation.Generator
 	requests  chan ChunkRequest
 
-	mutex  sync.RWMutex
+	mutex sync.RWMutex
 	chunk map[int]*chunk.Chunk
 }
 

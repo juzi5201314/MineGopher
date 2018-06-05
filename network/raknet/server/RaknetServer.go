@@ -3,6 +3,7 @@ package server
 import (
 	"bytes"
 	"fmt"
+	"github.com/juzi5201314/MineGopher/api/player"
 	apiserver "github.com/juzi5201314/MineGopher/api/server"
 	"github.com/juzi5201314/MineGopher/network/query"
 	"github.com/juzi5201314/MineGopher/network/raknet/protocol"
@@ -11,7 +12,6 @@ import (
 	"net"
 	"sync"
 	"time"
-	"github.com/juzi5201314/MineGopher/api/player"
 )
 
 const (

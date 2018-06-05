@@ -2,11 +2,11 @@ package level
 
 import (
 	"github.com/golang/geo/r3"
-	"math"
-	"sync"
-	"github.com/juzi5201314/MineGopher/level/providers"
 	"github.com/google/uuid"
 	"github.com/juzi5201314/MineGopher/level/generation"
+	"github.com/juzi5201314/MineGopher/level/providers"
+	"math"
+	"sync"
 
 	"github.com/juzi5201314/MineGopher/level/chunk"
 )
@@ -20,7 +20,6 @@ type Dimension struct {
 	entities map[uint64]chunk.IEntity
 	viewers  map[uuid.UUID]chunk.Viewer
 }
-
 
 var EntityRuntimeId uint64
 
@@ -126,7 +125,7 @@ func (dimension *Dimension) GetEntity(runtimeId uint64) (chunk.IEntity, bool) {
 	dimension.mutex.RLock()
 	defer dimension.mutex.RUnlock()
 	entity, ok := dimension.entities[runtimeId]
-		return entity, ok
+	return entity, ok
 }
 
 // HasEntity checks if the dimension has an entity available with the given runtime ID.

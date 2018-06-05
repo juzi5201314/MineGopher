@@ -1,12 +1,12 @@
 package providers
 
 import (
-	"sync"
-	"strconv"
-	"os"
 	"github.com/juzi5201314/MineGopher/level/io"
 	"github.com/juzi5201314/MineGopher/nbt"
 	"github.com/juzi5201314/MineGopher/utils"
+	"os"
+	"strconv"
+	"sync"
 )
 
 type Anvil struct {

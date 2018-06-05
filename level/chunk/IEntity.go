@@ -14,10 +14,9 @@ type IEntity interface {
 	SetPosition(r3.Vector) error
 	GetNBT() *nbt.Compound
 	SetNBT(*nbt.Compound)
-	SetDimension(interface{
+	SetDimension(interface {
 		GetChunk(int32, int32) (*Chunk, bool)
 	})
 	SpawnToAll()
 	Tick()
 }
-

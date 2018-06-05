@@ -1,8 +1,8 @@
 package generation
 
 import (
-	"github.com/juzi5201314/MineGopher/level/chunk"
 	"errors"
+	"github.com/juzi5201314/MineGopher/level/chunk"
 )
 
 type Generator interface {
@@ -23,7 +23,6 @@ func (generators Generators) Register(generator Generator) {
 func (generators Generators) Deregister(name string) {
 	delete(generators, name)
 }
-
 
 func (generators Generators) Get(name string) (Generator, error) {
 	if !generators.IsRegistered(name) {

@@ -7,7 +7,6 @@ type FullChunkDataPacket struct {
 	ChunkData []byte
 }
 
-
 func (pk *FullChunkDataPacket) Encode() {
 	pk.PutVarInt(pk.ChunkX)
 	pk.PutVarInt(pk.ChunkZ)

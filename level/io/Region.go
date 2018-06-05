@@ -207,11 +207,9 @@ func (r *Region) WriteChunkData(x, z int32, data []byte, compressionType byte) {
 	r.File.WriteAt(buffer.Bytes(), int64(offset))
 }
 
-
 func (r *Region) HasChunkGenerated(x, z int32) bool {
 	return r.GetLocation(x, z).IsExistent()
 }
-
 
 func (location *Location) IsExistent() bool {
 	return location.Offset >= HeaderSize && location.SectorLength != 0

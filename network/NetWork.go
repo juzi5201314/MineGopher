@@ -2,8 +2,8 @@ package network
 
 import (
 	"fmt"
-	"github.com/juzi5201314/MineGopher/api/server"
 	apinetwork "github.com/juzi5201314/MineGopher/api/network"
+	"github.com/juzi5201314/MineGopher/api/server"
 	"github.com/juzi5201314/MineGopher/network/protocol"
 )
 
@@ -58,10 +58,9 @@ func (network *NetWork) RegisterPacket(id byte, fn func() protocol.DataPacket) {
 }
 
 func (network *NetWork) GetPacket(id byte) (func() protocol.DataPacket, bool) {
-		p, has := network.packets[id]
-		return p, has
+	p, has := network.packets[id]
+	return p, has
 }
-
 
 func (network *NetWork) RegisterPackets() {
 	network.RegisterPacket(protocol.GetPacketId(protocol.LOGIN_PACKET), func() protocol.DataPacket {
@@ -91,8 +90,7 @@ func (network *NetWork) RegisterPackets() {
 	network.RegisterPacket(protocol.GetPacketId(protocol.ADD_PLAYER_PACKET), func() protocol.DataPacket {
 		return &protocol.AddPlayerPacket{Packet: protocol.NewPacket(protocol.GetPacketId(protocol.ADD_PLAYER_PACKET))}
 	})
-network.RegisterPacket(protocol.GetPacketId(protocol.MOVE_PLAYER_PACKET), func() protocol.DataPacket {
+	network.RegisterPacket(protocol.GetPacketId(protocol.MOVE_PLAYER_PACKET), func() protocol.DataPacket {
 		return &protocol.MovePlayerPacket{Packet: protocol.NewPacket(protocol.GetPacketId(protocol.MOVE_PLAYER_PACKET))}
 	})
 }
-

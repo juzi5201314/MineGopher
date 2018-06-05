@@ -8,16 +8,16 @@ import (
 
 type AddPlayerPacket struct {
 	*Packet
-	UUID            uuid.UUID
-	Username        string
-	DisplayName     string
-	Platform        int32
-	UnknownString   string
-	EntityUniqueId  int64
-	EntityRuntimeId uint64
-	Position        r3.Vector
-	Motion          r3.Vector
-	Rotation        data.Rotation
+	UUID              uuid.UUID
+	Username          string
+	DisplayName       string
+	Platform          int32
+	UnknownString     string
+	EntityUniqueId    int64
+	EntityRuntimeId   uint64
+	Position          r3.Vector
+	Motion            r3.Vector
+	Rotation          data.Rotation
 	Metadata          map[uint32][]interface{}
 	Flags             uint32
 	CommandPermission uint32
@@ -26,7 +26,6 @@ type AddPlayerPacket struct {
 	CustomFlags       uint32
 	Long1             int64
 }
-
 
 func (pk *AddPlayerPacket) Encode() {
 	pk.PutUUID(pk.UUID)

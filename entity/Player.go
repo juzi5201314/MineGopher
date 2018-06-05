@@ -1,17 +1,17 @@
 package entity
 
 import (
+	"github.com/golang/geo/r3"
 	"github.com/google/uuid"
+	"github.com/juzi5201314/MineGopher/api"
+	"github.com/juzi5201314/MineGopher/api/player"
 	"github.com/juzi5201314/MineGopher/api/server"
+	"github.com/juzi5201314/MineGopher/level"
+	"github.com/juzi5201314/MineGopher/level/chunk"
+	"github.com/juzi5201314/MineGopher/math"
 	"github.com/juzi5201314/MineGopher/network"
 	"github.com/juzi5201314/MineGopher/network/protocol"
 	"github.com/juzi5201314/MineGopher/network/protocol/types"
-	"github.com/juzi5201314/MineGopher/level/chunk"
-	"github.com/golang/geo/r3"
-	"github.com/juzi5201314/MineGopher/math"
-	"github.com/juzi5201314/MineGopher/api"
-	"github.com/juzi5201314/MineGopher/level"
-	"github.com/juzi5201314/MineGopher/api/player"
 	gfmath "math"
 )
 
@@ -33,7 +33,7 @@ type Player struct {
 
 	viewDistance  int32
 	needLoadChunk bool
-	OnGround bool
+	OnGround      bool
 
 	chunkLoader *level.ChunkLoader
 }
@@ -217,7 +217,7 @@ func (player *Player) Tick() {
 }
 
 func (player *Player) Move(x, y, z float64, pitch, yaw, headYaw float64, onGround bool) {
-	newChunk, _ := player.Dimension.GetChunk(int32(gfmath.Floor(x)) >> 4, int32(gfmath.Floor(z)) >> 4)
+	newChunk, _ := player.Dimension.GetChunk(int32(gfmath.Floor(x))>>4, int32(gfmath.Floor(z))>>4)
 	if player.GetChunk() != newChunk {
 		player.GetChunk().RemoveViewer(player)
 		newChunk.AddViewer(player)

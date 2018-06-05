@@ -1,11 +1,11 @@
 package chunk
 
 import (
-	"sync"
-	"github.com/google/uuid"
 	"errors"
+	"github.com/google/uuid"
 	"github.com/juzi5201314/MineGopher/nbt"
 	"github.com/juzi5201314/MineGopher/utils"
+	"sync"
 )
 
 type Chunk struct {
@@ -45,13 +45,11 @@ func (chunk *Chunk) GetViewers() map[uuid.UUID]Viewer {
 	return chunk.viewers
 }
 
-
 func (chunk *Chunk) AddViewer(player Viewer) {
 	chunk.Lock()
 	chunk.viewers[player.GetUUID()] = player
 	chunk.Unlock()
 }
-
 
 func (chunk *Chunk) RemoveViewer(player Viewer) {
 	chunk.Lock()
@@ -59,16 +57,13 @@ func (chunk *Chunk) RemoveViewer(player Viewer) {
 	chunk.Unlock()
 }
 
-
 func (chunk *Chunk) GetBiome(x, z int) byte {
 	return chunk.Biomes[chunk.GetBiomeIndex(x, z)]
 }
 
-
 func (chunk *Chunk) SetBiome(x, z int, biome byte) {
 	chunk.Biomes[chunk.GetBiomeIndex(x, z)] = biome
 }
-
 
 func (chunk *Chunk) AddEntity(entity IEntity) error {
 	if entity.IsClosed() {
@@ -80,18 +75,15 @@ func (chunk *Chunk) AddEntity(entity IEntity) error {
 	return nil
 }
 
-
 func (chunk *Chunk) RemoveEntity(runtimeId uint64) {
 	chunk.Lock()
 	delete(chunk.entities, runtimeId)
 	chunk.Unlock()
 }
 
-
 func (chunk *Chunk) GetEntities() map[uint64]IEntity {
 	return chunk.entities
 }
-
 
 func (chunk *Chunk) SetBlockNBTAt(x, y, z int, nbt *nbt.Compound) {
 	chunk.Lock()
@@ -103,13 +95,11 @@ func (chunk *Chunk) SetBlockNBTAt(x, y, z int, nbt *nbt.Compound) {
 	chunk.Unlock()
 }
 
-
 func (chunk *Chunk) RemoveBlockNBTAt(x, y, z int) {
 	chunk.Lock()
 	delete(chunk.blockNBT, GetBlockNBTIndex(x, y, z))
 	chunk.Unlock()
 }
-
 
 func (chunk *Chunk) BlockNBTExistsAt(x, y, z int) bool {
 	chunk.RLock()
@@ -118,8 +108,6 @@ func (chunk *Chunk) BlockNBTExistsAt(x, y, z int) bool {
 	return ok
 }
 
-
-
 func (chunk *Chunk) GetBlockNBTAt(x, y, z int) (*nbt.Compound, bool) {
 	chunk.RLock()
 	var c, ok = chunk.blockNBT[GetBlockNBTIndex(x, y, z)]
@@ -127,68 +115,55 @@ func (chunk *Chunk) GetBlockNBTAt(x, y, z int) (*nbt.Compound, bool) {
 	return c, ok
 }
 
-
 func (chunk *Chunk) GetBiomeIndex(x, z int) int {
 	return (x << 4) | z
 }
-
 
 func (chunk *Chunk) GetIndex(x, y, z int) int {
 	return (x << 12) | (z << 8) | y
 }
 
-
 func (chunk *Chunk) GetHeightMapIndex(x, z int) int {
 	return (z << 4) | x
 }
-
 
 func (chunk *Chunk) SetBlockId(x, y, z int, blockId byte) {
 	chunk.GetSubChunk(byte(y>>4)).SetBlockId(x, y&15, z, blockId)
 }
 
-
 func (chunk *Chunk) GetBlockId(x, y, z int) byte {
 	return chunk.GetSubChunk(byte(y>>4)).GetBlockId(x, y&15, z)
 }
-
 
 func (chunk *Chunk) SetBlockData(x, y, z int, data byte) {
 	chunk.GetSubChunk(byte(y>>4)).SetBlockData(x, y&15, z, data)
 }
 
-
 func (chunk *Chunk) GetBlockData(x, y, z int) byte {
 	return chunk.GetSubChunk(byte(y>>4)).GetBlockData(x, y&15, z)
 }
-
 
 func (chunk *Chunk) SetBlockLight(x, y, z int, level byte) {
 	chunk.GetSubChunk(byte(y>>4)).SetBlockLight(x, y&15, z, level)
 }
 
-
 func (chunk *Chunk) GetBlockLight(x, y, z int) byte {
 	return chunk.GetSubChunk(byte(y>>4)).GetBlockLight(x, y&15, z)
 }
-
 
 func (chunk *Chunk) SetSkyLight(x, y, z int, level byte) {
 	chunk.GetSubChunk(byte(y>>4)).SetSkyLight(x, y&15, z, level)
 }
 
-
 func (chunk *Chunk) GetSkyLight(x, y, z int) byte {
 	return chunk.GetSubChunk(byte(y>>4)).GetSkyLight(x, y&15, z)
 }
-
 
 func (chunk *Chunk) SetSubChunk(y byte, subChunk *SubChunk) {
 	chunk.Lock()
 	chunk.subChunks[y] = subChunk
 	chunk.Unlock()
 }
-
 
 func (chunk *Chunk) GetSubChunk(y byte) *SubChunk {
 	chunk.RLock()
@@ -203,7 +178,6 @@ func (chunk *Chunk) GetSubChunk(y byte) *SubChunk {
 	return chunk.subChunks[y]
 }
 
-
 func (chunk *Chunk) SubChunkExists(y byte) bool {
 	chunk.RLock()
 	var _, ok = chunk.subChunks[y]
@@ -211,21 +185,17 @@ func (chunk *Chunk) SubChunkExists(y byte) bool {
 	return ok
 }
 
-
 func (chunk *Chunk) GetSubChunks() map[byte]*SubChunk {
 	return chunk.subChunks
 }
-
 
 func (chunk *Chunk) SetHeightMapAt(x, z int, value int16) {
 	chunk.HeightMap[chunk.GetHeightMapIndex(x, z)] = value
 }
 
-
 func (chunk *Chunk) GetHeightMapAt(x, z int) int16 {
 	return chunk.HeightMap[chunk.GetHeightMapIndex(x, z)]
 }
-
 
 func (chunk *Chunk) RecalculateHeightMap() {
 	for x := 0; x < 16; x++ {
@@ -234,7 +204,6 @@ func (chunk *Chunk) RecalculateHeightMap() {
 		}
 	}
 }
-
 
 func (chunk *Chunk) GetHighestSubChunk() *SubChunk {
 	chunk.RLock()
@@ -251,23 +220,18 @@ func (chunk *Chunk) GetHighestSubChunk() *SubChunk {
 	return nil
 }
 
-
 func (chunk *Chunk) GetHighestBlockId(x, z int) byte {
 	return chunk.GetHighestSubChunk().GetHighestBlockId(x, z)
 }
-
 
 func (chunk *Chunk) GetHighestBlockData(x, z int) byte {
 	return chunk.GetHighestSubChunk().GetHighestBlockData(x, z)
 }
 
-
 func (chunk *Chunk) GetFilledSubChunks() byte {
 
 	return byte(len(chunk.subChunks))
 }
-
-
 
 func (chunk *Chunk) PruneEmptySubChunks() {
 	chunk.Lock()
@@ -283,13 +247,11 @@ func (chunk *Chunk) PruneEmptySubChunks() {
 	chunk.Unlock()
 }
 
-
 func (chunk *Chunk) ToBinary() []byte {
 	var stream = utils.NewStream()
 	var subChunkCount = chunk.GetFilledSubChunks()
 
 	stream.PutByte(subChunkCount)
-
 
 	for i := byte(0); i < subChunkCount; i++ {
 		if _, ok := chunk.subChunks[i]; !ok {
@@ -298,7 +260,6 @@ func (chunk *Chunk) ToBinary() []byte {
 			stream.PutBytes(chunk.subChunks[i].ToBinary())
 		}
 	}
-
 
 	for i := 255; i >= 0; i-- {
 		stream.PutLittleShort(chunk.HeightMap[i])
@@ -313,7 +274,6 @@ func (chunk *Chunk) ToBinary() []byte {
 
 	return stream.GetBuffer()
 }
-
 
 func GetBlockNBTIndex(x, y, z int) int {
 	return ((y & 256) << 8) | ((x & 15) << 4) | (z & 15)

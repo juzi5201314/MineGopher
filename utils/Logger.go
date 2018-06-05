@@ -90,7 +90,7 @@ func (logger *Logger) Println(messages ...interface{}) {
 	logger.messageQueue <- (BrightCyan + Chat + " " + strings.Trim(fmt.Sprint(messages), "[]"))
 }
 
-func (logger *Logger) PacicError(err error) {
+func (logger *Logger) PanicError(err error) {
 	if err == nil {
 		return
 	}
