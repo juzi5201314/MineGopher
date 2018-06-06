@@ -15,32 +15,33 @@ const (
 	XML  = 2
 )
 
-func NewConfig(filename string, ctype int, data map[string]interface{}) *Config {
-	config := &Config{filepath: filename, ctype: ctype, data: data}
+func NewConfig(file string, ctype int, data map[string]interface{}) *Config {
+	config := &Config{filepath: file, ctype: ctype, data: data}
 	config.load()
 	return config
 }
 
 type KV struct {
-Key string
-Value interface{}
+	Key   string
+	Value interface{}
 }
 
 type Config struct {
 	filepath string
+	filename string
 	ctype    int
 	data     map[string]interface{}
-	file     *os.File
 	isnew    bool
 }
 
 func (config *Config) load() {
 	_, err := os.Stat(config.filepath)
-	file, ferr := os.OpenFile(config.filepath, os.O_CREATE | os.O_RDWR, 0700)
+	file, ferr := os.OpenFile(config.filepath, os.O_CREATE|os.O_RDWR, 0700)
+	defer file.Close()
 	if ferr != nil {
 		panic(ferr)
 	}
-	config.file = file
+	config.filename = file.Name()
 	config.isnew = os.IsNotExist(err)
 	if config.isnew {
 		bd := config.Marshal(config.data)
@@ -50,18 +51,18 @@ func (config *Config) load() {
 	} else if err == nil {
 		buffer := make([]byte, 102400)
 		n, err := file.Read(buffer)
-if err != nil {
-panic(err)
-}
-olddata := config.data
-config.data = map[string]interface{}{}
+		if err != nil {
+			panic(err)
+		}
+		olddata := config.data
+		config.data = map[string]interface{}{}
 		config.Unmarshal(buffer[:n], config.data)
 
-for k, v := range olddata {
-if _, has := config.data[k]; !has {
-config.data[k] = v
-}
-}
+		for k, v := range olddata {
+			if _, has := config.data[k]; !has {
+				config.data[k] = v
+			}
+		}
 
 	}
 }
@@ -79,9 +80,10 @@ func (config *Config) Set(key string, value interface{}) {
 }
 
 func (config *Config) Save() {
-	config.file.Truncate(0)
-	config.file.Write(config.Marshal(config.data))
-	config.file.Sync()
+	file, _ := os.OpenFile(config.filepath, os.O_TRUNC | os.O_CREATE | os.O_WRONLY, 0700)
+	file.Write(config.Marshal(config.data))
+	file.Sync()
+	defer file.Close()
 }
 
 func (config *Config) IsNew() bool {
@@ -97,16 +99,16 @@ func (config *Config) Marshal(data interface{}) []byte {
 	case JSON:
 		d, err = json.Marshal(data)
 	case XML:
-sts := make([]KV, 0)
-for k, v := range data.(map[string]interface{}) {
-sts = append(sts, KV{k, v})
-}
-d, err = xml.MarshalIndent(sts, "", "\n")
+		sts := make([]KV, 0)
+		for k, v := range data.(map[string]interface{}) {
+			sts = append(sts, KV{k, v})
+		}
+		d, err = xml.MarshalIndent(sts, "", "\n")
 	default:
 		err = errors.New("Type not found")
 	}
 	if err != nil {
-		GetLogger().Error("Marshal file: " + config.file.Name() + " fail. message: " + err.Error())
+		GetLogger().Error("Marshal file: " + config.filename + " fail. message: " + err.Error())
 	}
 	return d
 }
@@ -120,6 +122,6 @@ func (config *Config) Unmarshal(buffer []byte, out map[string]interface{}) {
 	case XML:
 		xml.Unmarshal(buffer, out)
 	default:
-		GetLogger().Error("Config: " + config.file.Name() + " cannot be parsed ")
+		GetLogger().Error("Config: " + config.filename + " cannot be parsed ")
 	}
 }
