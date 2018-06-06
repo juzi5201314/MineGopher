@@ -1,11 +1,10 @@
 package main
 
 import (
-	"encoding/base64"
 	"fmt"
 	"github.com/juzi5201314/MineGopher/server"
 	"github.com/juzi5201314/MineGopher/utils"
-	"github.com/satori/go.uuid"
+"github.com/google/uuid"
 	"os"
 	"os/signal"
 	"path/filepath"
@@ -35,11 +34,11 @@ func main() {
 		"level-name":       "world",
 		"level-seed":       "",
 		"enable-query":     true,
-		"enable-rcon":      true,
-		"rcon-passwd":      base64.StdEncoding.EncodeToString([]byte(uuid.Must(uuid.NewV4()).String())) + strings.Replace(uuid.Must(uuid.NewV4()).String(), "-", "", -1),
 		"auto-save-player": true,
 		"auto-save-level":  true,
-		"xbox-auth":        true,
+"webconsole": true,
+"webconsole-static": true,
+"webconsole-password": uuid.New(),
 	})
 
 	server := server.New(path, config, logger)
