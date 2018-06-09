@@ -22,7 +22,7 @@ func (flat Flat) GenerateNewChunk(x, z int32) *chunk.Chunk {
 			y++
 			c.SetBlockId(x, y, z, 3)
 			y++
-			c.SetBlockId(x, y, z, 2)
+			c.SetBlockId(x, y, z, 57)
 
 			for i := y - 1; i >= 0; i-- {
 				c.SetSkyLight(x, y, z, 0)

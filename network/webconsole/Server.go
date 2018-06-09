@@ -1,13 +1,13 @@
 package webconsole
 
 import (
-	"strconv"
 	"encoding/json"
+	"strconv"
 
 	"github.com/juzi5201314/MineGopher/api/server"
 
-	"github.com/labstack/echo"
 	"github.com/gorilla/websocket"
+	"github.com/labstack/echo"
 	"io/ioutil"
 )
 
@@ -17,7 +17,7 @@ var upgrader = websocket.Upgrader{
 }
 
 const (
-	OK          = iota
+	OK = iota
 	ERROR
 	PWD_ERROR
 	PWD_SUCCESS

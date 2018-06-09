@@ -159,9 +159,6 @@ func (dimension *Dimension) SetChunk(x, z int32, chunk *chunk.Chunk) {
 
 // GetChunk returns a chunk in the dimension at the given chunk X and Z.
 func (dimension *Dimension) GetChunk(x, z int32) (*chunk.Chunk, bool) {
-	if dimension == nil {
-		println(414)
-	}
 	return dimension.chunkProvider.GetChunk(x, z)
 }
 

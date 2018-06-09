@@ -116,9 +116,7 @@ func (provider *Anvil) Close(async bool) {
 
 // Save saves all regions in the provider.
 func (provider *Anvil) Save() {
-	go func() {
-		for _, region := range provider.regions {
-			region.Save()
-		}
-	}()
+	for _, region := range provider.regions {
+		region.Save()
+	}
 }

@@ -20,7 +20,7 @@ func NewLevel(path string, name string) *Level {
 	level.name = name
 	level.path = path
 	level.dimension = NewDimension(level)
-	level.dimension.SetChunkProvider(providers.NewAnvil(path + "/region"))
+	level.dimension.SetChunkProvider(providers.NewAnvil(path + "/region/"))
 	level.dimension.SetGenerator(generation.Flat{})
 	level.gameRules = map[GameRuleName]*GameRule{}
 	level.initGameRules()

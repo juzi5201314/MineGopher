@@ -269,8 +269,9 @@ func (chunk *Chunk) ToBinary() []byte {
 		stream.PutByte(byte(biome))
 	}
 	stream.PutByte(0)
+	stream.PutByte(0)
 
-	stream.PutVarInt(0)
+	//stream.PutVarInt(0)
 
 	return stream.GetBuffer()
 }

@@ -2,9 +2,9 @@ package main
 
 import (
 	"fmt"
+	"github.com/google/uuid"
 	"github.com/juzi5201314/MineGopher/server"
 	"github.com/juzi5201314/MineGopher/utils"
-"github.com/google/uuid"
 	"os"
 	"os/signal"
 	"path/filepath"
@@ -26,19 +26,19 @@ func main() {
 	file, _ := os.OpenFile(path+"logs/"+time.Now().Format("2006-01-02_15.04.05")+".log", os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0700)
 	logger := utils.NewLogger(file)
 	config := utils.NewConfig(path+"minegopher.yml", utils.YMAL, map[string]interface{}{
-		"motd":             "MineGopher Server For Minecraft: PE",
-		"server-ip":        "0.0.0.0",
-		"server-port":      19132,
-		"max-player":       20,
-		"gamemode":         0,
-		"level-name":       "world",
-		"level-seed":       "",
-		"enable-query":     true,
-		"auto-save-player": true,
-		"auto-save-level":  true,
-"webconsole": true,
-"webconsole-static": true,
-"webconsole-password": uuid.New(),
+		"motd":                "MineGopher Server For Minecraft: PE",
+		"server-ip":           "0.0.0.0",
+		"server-port":         19132,
+		"max-player":          20,
+		"gamemode":            0,
+		"level-name":          "world",
+		"level-seed":          "",
+		"enable-query":        true,
+		"auto-save-player":    true,
+		"auto-save-level":     true,
+		"webconsole":          true,
+		"webconsole-static":   true,
+		"webconsole-password": uuid.New(),
 	})
 
 	server := server.New(path, config, logger)

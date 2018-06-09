@@ -14,5 +14,4 @@ func (pk *FullChunkDataPacket) Encode() {
 }
 
 func (pk *FullChunkDataPacket) Decode() {
-
 }

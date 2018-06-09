@@ -6,7 +6,8 @@ const (
 )
 
 var Protocols = map[int32]string{
-	201: "1.2.10",
+	201: "1.2.10.2",
+	260: "1.2.20.2",
 }
 
 type PacketList map[PacketName]byte

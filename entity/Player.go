@@ -45,6 +45,7 @@ func (player *Player) HandlePacket(mpk interface {
 		switch pk.(type) {
 		case *protocol.LoginPacket:
 			if _, in := protocol.Protocols[pk.(*protocol.LoginPacket).Protocol]; !in {
+				server.GetServer().GetLogger().Debug("protocol: ", pk.(*protocol.LoginPacket).Protocol)
 				player.Close()
 				return
 			}
@@ -65,13 +66,12 @@ func (player *Player) HandlePacket(mpk interface {
 				break
 			case 4:
 				//Completed
-				println(2333)
 				server.GetServer().GetDefaultLevel().GetDimension().LoadChunk(0, 0, func(chunk *chunk.Chunk) {
 					player.Entity.Dimension = server.GetServer().GetDefaultLevel().GetDimension()
 					server.GetServer().GetDefaultLevel().GetDimension().AddEntity(player.Entity, r3.Vector{0, 40, 0})
 					pk := &protocol.StartGamePacket{Packet: protocol.NewPacket(protocol.GetPacketId(protocol.START_GAME_PACKET))}
 					pk.Generator = 1
-					pk.LevelSeed = 312402
+					pk.LevelSeed = 1
 					pk.TrustPlayers = true
 					pk.DefaultPermissionLevel = 1
 					pk.EntityRuntimeId = player.GetEid()
@@ -114,13 +114,14 @@ func (player *Player) HandlePacket(mpk interface {
 					_ = p
 				}
 				//player.SpawnToAll()
-				player.UpdateAttributes()
+				//player.UpdateAttributes()
 				pk := &protocol.PlayStatusPacket{protocol.NewPacket(protocol.GetPacketId(protocol.PLAY_STATUS_PACKET)), 3}
 				player.SendPacket(pk)
 			}
 			break
 		case *protocol.MovePlayerPacket:
-
+			movepk := pk.(*protocol.MovePlayerPacket)
+			player.Move(movepk.Position.X, movepk.Position.Y, movepk.Position.Z, movepk.Rotation.Pitch, movepk.Rotation.Yaw, movepk.Rotation.HeadYaw, movepk.OnGround)
 			for _, v := range player.GetViewers() {
 				v.SendPacket(pk.(*protocol.MovePlayerPacket))
 			}
@@ -146,6 +147,7 @@ func (player *Player) onLogin(packet *protocol.LoginPacket) {
 	player.chunkLoader.OnLoad = func(chunk *chunk.Chunk) {
 		cpk := &protocol.FullChunkDataPacket{protocol.NewPacket(protocol.GetPacketId(protocol.FULL_CHUNK_DATA_PACKET)), chunk.X, chunk.Z, chunk.ToBinary()}
 		player.SendPacket(cpk)
+
 	}
 
 	pk := &protocol.PlayStatusPacket{protocol.NewPacket(protocol.GetPacketId(protocol.PLAY_STATUS_PACKET)), 0}
@@ -218,22 +220,27 @@ func (player *Player) Tick() {
 
 func (player *Player) Move(x, y, z float64, pitch, yaw, headYaw float64, onGround bool) {
 	newChunk, _ := player.Dimension.GetChunk(int32(gfmath.Floor(x))>>4, int32(gfmath.Floor(z))>>4)
+	//println(int32(gfmath.Floor(x))>>4, int32(gfmath.Floor(z))>>4)
 	if player.GetChunk() != newChunk {
+		player.Dimension.LoadChunk(newChunk.X, newChunk.Z, player.chunkLoader.OnLoad)
+		println(newChunk.X, newChunk.Z, " loading")
 		player.GetChunk().RemoveViewer(player)
-		newChunk.AddViewer(player)
-		for _, entity := range newChunk.GetEntities() {
-			e := entity.(protocol.AddEntityEntry)
-			pk := &protocol.AddEntityPacket{Packet: protocol.NewPacket(protocol.GetPacketId(protocol.ADD_ENTITY_PACKET))}
-			pk.UniqueId = e.GetUniqueId()
-			pk.RuntimeId = e.GetEid()
-			pk.EntityType = e.GetId()
-			pk.Position = e.GetPosition()
-			pk.Motion = e.GetMotion()
-			pk.Rotation = e.GetRotation()
-			pk.Attributes = e.GetAttributeMap()
-			pk.EntityData = e.GetEntityData()
-			player.SendPacket(pk)
-		}
+		/*
+			newChunk.AddViewer(player)
+			for _, entity := range newChunk.GetEntities() {
+				e := entity.(protocol.AddEntityEntry)
+				pk := &protocol.AddEntityPacket{Packet: protocol.NewPacket(protocol.GetPacketId(protocol.ADD_ENTITY_PACKET))}
+				pk.UniqueId = e.GetUniqueId()
+				pk.RuntimeId = e.GetEid()
+				pk.EntityType = e.GetId()
+				pk.Position = e.GetPosition()
+				pk.Motion = e.GetMotion()
+				pk.Rotation = e.GetRotation()
+				pk.Attributes = e.GetAttributeMap()
+				pk.EntityData = e.GetEntityData()
+				player.SendPacket(pk)
+			}
+		*/
 	}
 	player.SetPosition(r3.Vector{x, y, z})
 	player.Rotation.Pitch += float64(pitch)

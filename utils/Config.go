@@ -80,7 +80,7 @@ func (config *Config) Set(key string, value interface{}) {
 }
 
 func (config *Config) Save() {
-	file, _ := os.OpenFile(config.filepath, os.O_TRUNC | os.O_CREATE | os.O_WRONLY, 0700)
+	file, _ := os.OpenFile(config.filepath, os.O_TRUNC|os.O_CREATE|os.O_WRONLY, 0700)
 	file.Write(config.Marshal(config.data))
 	file.Sync()
 	defer file.Close()

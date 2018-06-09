@@ -1,17 +1,17 @@
 package server
 
 import (
+	networkapi "github.com/juzi5201314/MineGopher/api/network"
+	raknetapi "github.com/juzi5201314/MineGopher/api/network/raknet"
+	"github.com/juzi5201314/MineGopher/api/player"
 	api "github.com/juzi5201314/MineGopher/api/server"
 	"github.com/juzi5201314/MineGopher/level"
-	"os"
-	networkapi "github.com/juzi5201314/MineGopher/api/network"
-	raknet "github.com/juzi5201314/MineGopher/network/raknet/server"
-	raknetapi "github.com/juzi5201314/MineGopher/api/network/raknet"
-	"github.com/juzi5201314/MineGopher/utils"
 	"github.com/juzi5201314/MineGopher/network"
-"github.com/juzi5201314/MineGopher/network/webconsole"
-	"github.com/juzi5201314/MineGopher/api/player"
-"strconv"
+	raknet "github.com/juzi5201314/MineGopher/network/raknet/server"
+	"github.com/juzi5201314/MineGopher/network/webconsole"
+	"github.com/juzi5201314/MineGopher/utils"
+	"os"
+	"strconv"
 )
 
 const (
@@ -25,7 +25,7 @@ type Server struct {
 	logger            *utils.Logger
 	pluginPath        string
 	playersPath       string
-themePath string
+	themePath         string
 	worldsPath        string
 	behaviorPacksPath string
 	resourecePackPath string
@@ -36,7 +36,7 @@ themePath string
 	port              int
 	raknetServer      raknetapi.RaknetServer
 
-	levels map[string]*level.Level
+	levels       map[string]*level.Level
 	defaultLevel string
 }
 
@@ -48,7 +48,7 @@ func New(serverPath string, config *utils.Config, logger *utils.Logger) *Server 
 	server.config = config
 	server.logger = logger
 	server.pluginPath = serverPath + "/plugins/"
-server.themePath = serverPath + "/theme/"
+	server.themePath = serverPath + "/theme/"
 	server.playersPath = serverPath + "/players/"
 	server.worldsPath = serverPath + "/worlds/"
 	server.resourecePackPath = serverPath + "/resoureces_pack/"
@@ -110,7 +110,7 @@ func (server *Server) Start() {
 	server.isRunning = true
 
 	server.defaultLevel = server.config.Get("level-name", "world").(string)
-	dl := level.NewLevel(server.worldsPath + server.defaultLevel, server.defaultLevel)
+	dl := level.NewLevel(server.worldsPath+server.defaultLevel, server.defaultLevel)
 	server.levels[server.defaultLevel] = dl
 
 	server.network = network.New()
@@ -118,17 +118,20 @@ func (server *Server) Start() {
 	server.raknetServer = raknet.New(server.GetIp(), server.GetPort())
 	server.raknetServer.Start()
 
-server.logger.Info("RakNetServer Listen " + server.GetIp() + ":" + strconv.Itoa(server.GetPort()))
+	server.logger.Info("RakNetServer Listen " + server.GetIp() + ":" + strconv.Itoa(server.GetPort()))
 
 	if server.config.Get("webconsole", true).(bool) {
-webconsole.Start()
+		webconsole.Start()
 	}
-server.config.Save()
+	server.config.Save()
 }
 
 func (server *Server) Shutdown() {
 	if !server.isRunning {
 		return
+	}
+	for _, l := range server.levels {
+		l.GetDimension().Save()
 	}
 	server.logger.Info("Server stopped.")
 	server.isRunning = false
@@ -172,7 +175,7 @@ func (server *Server) GetDefaultLevel() *level.Level {
 }
 
 func (server *Server) GetPath() string {
-return server.serverPath
+	return server.serverPath
 }
 
 /*
@@ -380,7 +383,7 @@ func (server *Server) mkdirs() {
 	//os.Mkdir(server.behaviorPacksPath, 0700)
 	os.Mkdir(server.resourecePackPath, 0700)
 	os.Mkdir(server.worldsPath, 0700)
-os.Mkdir(server.themePath, 0700)
+	os.Mkdir(server.themePath, 0700)
 }
 
 func (server *Server) GetIp() string {
