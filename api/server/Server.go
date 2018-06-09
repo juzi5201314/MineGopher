@@ -32,4 +32,5 @@ type Server interface {
 	GetLevel(string) *level.Level
 	GetDefaultLevel() *level.Level
 	GetAllPlayer() map[string]player.Player
+	GetPluginPath() string
 }

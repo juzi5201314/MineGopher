@@ -10,6 +10,7 @@ import (
 	"github.com/juzi5201314/MineGopher/utils"
 	"github.com/juzi5201314/MineGopher/network"
 	"github.com/juzi5201314/MineGopher/api/player"
+	"github.com/juzi5201314/MineGopher/mgplugin"
 )
 
 const (
@@ -35,6 +36,8 @@ type Server struct {
 
 	levels map[string]*level.Level
 	defaultLevel string
+
+	pluginManager *mgplugin.PluginManager
 }
 
 func New(serverPath string, config *utils.Config, logger *utils.Logger) *Server {
@@ -117,6 +120,10 @@ func (server *Server) Start() {
 	if server.config.Get("enable-query", true).(bool) {
 
 	}
+
+	//LoadPlugin
+	server.pluginManager = mgplugin.NewPluginManager()
+	server.pluginManager.LoadPlugins()
 }
 
 func (server *Server) Shutdown() {
@@ -377,4 +384,8 @@ func (server *Server) GetIp() string {
 
 func (server *Server) GetPort() int {
 	return server.port
+}
+
+func (server *Server) GetPluginPath() string{
+	return server.pluginPath
 }
