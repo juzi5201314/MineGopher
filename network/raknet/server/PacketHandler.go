@@ -9,11 +9,6 @@ import (
 	"time"
 )
 
-const (
-	MaximumMTUSize = 1492
-	MinimumMTUSize = 576
-)
-
 func HandleUnconnectedMessage(packetInterface protocol.DataPacket, addr *net.UDPAddr, server *RaknetServer) {
 	switch packet := packetInterface.(type) {
 	case *packets.UnconnectedPing:
@@ -46,11 +41,6 @@ func handleOpenConnectionRequest1(request *packets.OpenConnectionRequest1, addr 
 func handleOpenConnectionRequest2(request *packets.OpenConnectionRequest2, addr *net.UDPAddr, server *RaknetServer) {
 	reply := packets.NewOpenConnectionReply2()
 	reply.ServerId = server.GetId()
-	if request.MtuSize < MinimumMTUSize {
-		request.MtuSize = MinimumMTUSize
-	} else if request.MtuSize > MaximumMTUSize {
-		request.MtuSize = MaximumMTUSize
-	}
 	reply.MtuSize = request.MtuSize
 	reply.UseEncryption = false
 	reply.ClientAddress = addr.IP.String()

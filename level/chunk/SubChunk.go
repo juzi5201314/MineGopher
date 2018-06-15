@@ -118,3 +118,12 @@ func (subChunk *SubChunk) ToBinary() []byte {
 	bytes = append(bytes, subChunk.BlockData...)
 	return bytes
 }
+
+func (subChunk *SubChunk) fastSerialize() []byte {
+	var bytes = append([]byte{}, subChunk.BlockIds...)
+	bytes = append(bytes, subChunk.BlockData...)
+	bytes = append(bytes, subChunk.SkyLight...)
+	bytes = append(bytes, subChunk.BlockLight...)
+	return bytes
+}
+

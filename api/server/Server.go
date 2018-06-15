@@ -6,6 +6,7 @@ import (
 	"github.com/juzi5201314/MineGopher/api/player"
 	"github.com/juzi5201314/MineGopher/level"
 	"github.com/juzi5201314/MineGopher/utils"
+	"time"
 )
 
 var server Server = nil
@@ -35,4 +36,6 @@ type Server interface {
 	GetPath() string
 	GetIp() string
 	GetPort() int
+	ScheduleRepeatingTask(fn func(), d time.Duration) *time.Ticker
+	ScheduleDelayedTask(fn func(), d time.Duration) *time.Timer
 }

@@ -12,6 +12,8 @@ import (
 	"github.com/juzi5201314/MineGopher/utils"
 	"os"
 	"strconv"
+	"time"
+	"github.com/juzi5201314/MineGopher/plugin"
 )
 
 const (
@@ -35,6 +37,7 @@ type Server struct {
 	ip                string
 	port              int
 	raknetServer      raknetapi.RaknetServer
+	pluginLoader *plugin.PluginLoader
 
 	levels       map[string]*level.Level
 	defaultLevel string
@@ -56,6 +59,8 @@ func New(serverPath string, config *utils.Config, logger *utils.Logger) *Server 
 
 	server.ip = config.Get("server-ip", "0.0.0.0").(string)
 	server.port = config.Get("server-port", 19132).(int)
+
+	server.pluginLoader = plugin.NewLoader(server.pluginPath)
 	//s.LevelManager = level.NewManager(serverPath)
 	//server.CommandManager = commands.NewManager()
 	//server.CommandReader = command.NewCommandReader(os.Stdin)
@@ -123,6 +128,9 @@ func (server *Server) Start() {
 	if server.config.Get("webconsole", true).(bool) {
 		webconsole.Start()
 	}
+
+	server.pluginLoader.LoadPlugins()
+
 	server.config.Save()
 }
 
@@ -178,6 +186,20 @@ func (server *Server) GetPath() string {
 	return server.serverPath
 }
 
+func (server *Server) ScheduleRepeatingTask(fn func(), d time.Duration) *time.Ticker {
+	ticker := time.NewTicker(d)
+	go func() {
+		for range ticker.C {
+			fn()
+		}
+	}()
+	return ticker
+}
+
+
+func (server *Server) ScheduleDelayedTask(fn func(), d time.Duration) *time.Timer {
+	return time.AfterFunc(d, fn)
+}
 /*
 // GetMinecraftVersion returns the latest Minecraft game version.
 // It is prefixed with a 'v', for example: "v1.2.10.1"

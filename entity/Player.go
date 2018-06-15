@@ -222,8 +222,6 @@ func (player *Player) Move(x, y, z float64, pitch, yaw, headYaw float64, onGroun
 	newChunk, _ := player.Dimension.GetChunk(int32(gfmath.Floor(x))>>4, int32(gfmath.Floor(z))>>4)
 	//println(int32(gfmath.Floor(x))>>4, int32(gfmath.Floor(z))>>4)
 	if player.GetChunk() != newChunk {
-		player.Dimension.LoadChunk(newChunk.X, newChunk.Z, player.chunkLoader.OnLoad)
-		println(newChunk.X, newChunk.Z, " loading")
 		player.GetChunk().RemoveViewer(player)
 		/*
 			newChunk.AddViewer(player)

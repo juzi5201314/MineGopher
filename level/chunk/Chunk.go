@@ -228,9 +228,9 @@ func (chunk *Chunk) GetHighestBlockData(x, z int) byte {
 	return chunk.GetHighestSubChunk().GetHighestBlockData(x, z)
 }
 
-func (chunk *Chunk) GetFilledSubChunks() byte {
+func (chunk *Chunk) GetFilledSubChunks() int {
 
-	return byte(len(chunk.subChunks))
+	return len(chunk.subChunks)
 }
 
 func (chunk *Chunk) PruneEmptySubChunks() {
@@ -250,29 +250,22 @@ func (chunk *Chunk) PruneEmptySubChunks() {
 func (chunk *Chunk) ToBinary() []byte {
 	var stream = utils.NewStream()
 	var subChunkCount = chunk.GetFilledSubChunks()
-
-	stream.PutByte(subChunkCount)
-
-	for i := byte(0); i < subChunkCount; i++ {
-		if _, ok := chunk.subChunks[i]; !ok {
-			stream.PutBytes(make([]byte, 4096+2048+1))
+	stream.PutByte(byte(subChunkCount))
+	for i := 0; i < subChunkCount; i++ {
+		if _, ok := chunk.subChunks[byte(i)]; !ok {
+			//stream.PutBytes(make([]byte, 4096+2048+1))
 		} else {
-			stream.PutBytes(chunk.subChunks[i].ToBinary())
+			stream.PutBytes(chunk.subChunks[byte(i)].ToBinary())
 		}
 	}
-
 	for i := 255; i >= 0; i-- {
 		stream.PutLittleShort(chunk.HeightMap[i])
 	}
-
 	for _, biome := range chunk.Biomes {
 		stream.PutByte(byte(biome))
 	}
 	stream.PutByte(0)
-	stream.PutByte(0)
-
-	//stream.PutVarInt(0)
-
+	stream.PutVarInt(0)
 	return stream.GetBuffer()
 }
 

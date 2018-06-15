@@ -395,23 +395,16 @@ func (stream *Stream) PutBytes(bytes []byte) {
 }
 
 func (stream *Stream) PutLengthPrefixedBytes(bytes []byte) {
-
 	stream.PutUnsignedVarInt(uint32(len(bytes)))
-
 	stream.PutBytes(bytes)
 
 }
 
 func (stream *Stream) GetLengthPrefixedBytes() []byte {
-
 	return []byte(stream.GetString())
-
 }
 
 func (stream *Stream) ResetStream() {
-
 	stream.Offset = 0
-
 	stream.Buffer = []byte{}
-
 }
